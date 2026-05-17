@@ -3,6 +3,7 @@
 .venv-relic/
 venv/
 env/
+scripts/.venv-relic/
 __pycache__/
 *.py[cod]
 *$py.class

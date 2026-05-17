@@ -4,13 +4,19 @@
 
 ## Overview
 
-This mod provides automated scripting to:
-- **Unpack** the Chinese locale `.sga` archive
-- **Patch** font configuration files (`.fnt`) to fix text clipping and scaling
-- **Replace** Chinese fonts with Microsoft YaHei for improved rendering (optional)
-- **Repack** the locale archive (optional)
+This repository contains:
+- **Distributable Mod** (`mod/` folder): Pre-configured game files ready to install via Vortex or manually
+- **Development Tools** (`scripts/` folder): Utilities for unpacking `.sga` archives, patching `.fnt` files, and repacking
 
 The fix is especially critical for **4K and high-resolution displays** where default font sizes cause text to overflow UI elements.
+
+### For End Users (Playing)
+- Extract the `mod/` folder contents to `Engine/Locale/Chinese` in your DoW:DE installation
+- No scripts needed—it's a drop-in mod
+
+### For Developers (Customizing)
+- Use the `scripts/` folder to unpack, patch, and repack the locale archive
+- Requires Python 3.8+ and the MAK Relic SGA tools
 
 ## Features
 
@@ -23,62 +29,70 @@ The fix is especially critical for **4K and high-resolution displays** where def
 
 ## Installation
 
-### Prerequisites
+### For Players (End-User Installation)
+
+1. **Extract the `mod/` folder to your DoW:DE installation:**
+   ```
+   Extract mod/data → %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\data
+   Extract mod/sound → %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\sound
+   ```
+   Or use **Vortex Mod Manager** to deploy automatically.
+
+2. **Remove or rename the original `EnginLoc.sga`** so the game loads unpacked files.
+
+### For Developers (Customizing the Fix)
+
+#### Prerequisites
 - **Windows 10+** (PowerShell 5.0+) or **WSL 2** on other platforms
 - **Python 3.8+** (will be auto-installed in isolated venv)
 - **Dawn of War - Definitive Edition** (Steam)
 - Administrator privileges recommended
 
-### Setup
+#### Initial Setup
 
-1. **Extract this mod to the locale folder:**
-   ```
-   %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese
-   ```
-
-2. **Install dependencies (one-time):**
+1. **Install dependencies (one-time):**
    ```powershell
-   .\setup_relic_tool.ps1
+   .\scripts\setup_relic_tool.ps1
    ```
    This creates a local Python virtual environment and installs `relic-tool-sga` for archive manipulation.
 
-## Quick Start
+## Quick Start (Developers)
 
 ### Option A: No-Repack Method (Recommended)
 
 1. **Unpack the locale:**
    ```powershell
-   .\unpack_chinese_locale.ps1
+   .\scripts\unpack_chinese_locale.ps1
    ```
    - Backs up original `.sga` to `backup/`
-   - Extracts contents to `data/`
+   - Extracts contents to a temporary location
 
 2. **Preview the fix (dry-run):**
    ```powershell
-   .\.venv-relic\Scripts\python.exe apply_font_fix.py --dry-run --restore-from-bak --mode fallback-only --size 34
+   .\.venv-relic\Scripts\python.exe scripts\apply_font_fix.py --dry-run --restore-from-bak --mode fallback-only --size 34
    ```
 
 3. **Apply the fix:**
    ```powershell
-   .\.venv-relic\Scripts\python.exe apply_font_fix.py --restore-from-bak --mode fallback-only --size 34
+   .\.venv-relic\Scripts\python.exe scripts\apply_font_fix.py --restore-from-bak --mode fallback-only --size 34
    ```
 
-4. **Remove the original `.sga`** (game loads unpacked `data/` folder instead):
+4. **Remove the original `.sga`** (game loads unpacked folder instead):
    ```powershell
-   Remove-Item EnginLoc.sga -Force  # or rename to .bak
+   Remove-Item EnginLoc.sga -Force
    ```
 
-5. **Test in-game** — launch Dawn of War DE and check Chinese text rendering.
+5. **Test in-game** — launch Dawn of War DE and verify Chinese text rendering.
 
 ### Option B: Full Repack (Advanced)
 
 If you want to create a new `.sga` archive:
 
 ```powershell
-.\repack_chinese_locale.ps1
+.\scripts\repack_chinese_locale.ps1
 ```
 
-Output: `EnginLoc.new.sga` (replace original or test as mod override)
+Output: `EnginLoc.new.sga` (can replace original or test as mod override)
 
 ## Font Size Tuning
 
@@ -96,13 +110,13 @@ To replace Noto Sans TC and Gulim fonts with Microsoft YaHei (mainland-standard 
 
 1. **Pre-install YaHei fonts** (usually already on Windows):
    ```powershell
-   Copy-Item "C:\Windows\Fonts\msyh.ttc" ".\data\font\msyh.ttc" -Force
-   Copy-Item "C:\Windows\Fonts\msyhbd.ttc" ".\data\font\msyhbd.ttc" -Force
+   Copy-Item "C:\Windows\Fonts\msyh.ttc" "./data/font/msyh.ttc" -Force
+   Copy-Item "C:\Windows\Fonts\msyhbd.ttc" "./data/font/msyhbd.ttc" -Force
    ```
 
 2. **Apply fix with font replacement:**
    ```powershell
-   .\.venv-relic\Scripts\python.exe apply_font_fix.py `
+   .\.venv-relic\Scripts\python.exe scripts\apply_font_fix.py `
      --restore-from-bak `
      --mode all `
      --size 32 `
@@ -110,14 +124,16 @@ To replace Noto Sans TC and Gulim fonts with Microsoft YaHei (mainland-standard 
      --replace-font-match "NotoSansTC|Gulim"
    ```
 
-## Script Reference
+## Script Reference (Development Tools)
+
+All scripts are in the `scripts/` folder:
 
 | Script | Purpose |
-|--------|---------|
-| `setup_relic_tool.ps1` | Create venv and install MAK Relic SGA tools |
-| `unpack_chinese_locale.ps1` | Unpack `.sga` → `data/` with auto-backup |
-| `apply_font_fix.py` | Patch `.fnt` files; supports dry-run, restore, replace |
-| `repack_chinese_locale.ps1` | Repack `data/` → new `.sga` archive |
+|--------|----------|
+| `scripts/setup_relic_tool.ps1` | Create venv and install MAK Relic SGA tools |
+| `scripts/unpack_chinese_locale.ps1` | Unpack `.sga` archive with auto-backup |
+| `scripts/apply_font_fix.py` | Patch `.fnt` files; supports dry-run, restore, replace |
+| `scripts/repack_chinese_locale.ps1` | Repack modified data into new `.sga` archive |
 
 ### `apply_font_fix.py` Options
 
@@ -133,15 +149,24 @@ To replace Noto Sans TC and Gulim fonts with Microsoft YaHei (mainland-standard 
 
 ## Vortex Mod Manager Support
 
-This mod is **Vortex-ready**. To install:
+This mod is **Vortex-ready**. The `mod/` folder can be packaged for Nexus Mods.
+
+### For Players Installing via Vortex
 
 1. **Download** from Nexus Mods: [WH40K DOW DE Chinese Locale Font Fix](https://www.nexusmods.com/warhammer40kdawnofwar/mods/[MOD_ID])
 2. **Install via Vortex:**
    - Click "Install" in Vortex
    - Deploy to your DoW:DE installation
 3. **Activate** the mod in Vortex's mod list
+4. Remove or rename the original `EnginLoc.sga` file
+5. Launch the game—no scripts required!
 
-**Important:** After installing via Vortex, **run `setup_relic_tool.ps1`** once (if not already done) to install SGA tools, then use the scripts as normal.
+### For Developers
+
+The `mod/` folder metadata is Vortex-compatible:
+- `modinfo.json` — Vortex mod configuration
+- `installInfo.json` — Vortex installer instructions
+- `info.json` — Nexus Mods metadata
 
 ### Mod Metadata
 
@@ -155,41 +180,61 @@ This mod is **Vortex-ready**. To install:
 
 ```
 wh40k-dow-de-tc-mod/
-├── setup_relic_tool.ps1           # Install tooling
-├── unpack_chinese_locale.ps1      # Unpack .sga
-├── apply_font_fix.py              # Font patching logic
-├── repack_chinese_locale.ps1      # Repack to .sga
-├── FONT_FIX_README.md             # Original technical doc
-├── Engine.ucs                     # Resource file (not modified)
-├── EnginLoc.sga0                  # Original backup (reference)
-├── .gitignore
-├── README.md
-├── modinfo.json                   # Vortex metadata
-├── info.json                      # Nexus Mods metadata
-└── data/
-    ├── art/ui/swf/                # Font glyph assets (UI references)
-    ├── font/
-    │   ├── *.fnt                  # Font config files (to be patched)
-    │   └── *.ttc                  # Font files (TrueType collections)
-    └── sound/
+├── scripts/                           # Development tools
+│   ├── setup_relic_tool.ps1           # Install dependencies (Python venv + SGA tools)
+│   ├── unpack_chinese_locale.ps1      # Unpack .sga archive
+│   ├── apply_font_fix.py              # Font patching logic
+│   └── repack_chinese_locale.ps1      # Repack to .sga archive
+│
+├── mod/                               # Distributable mod (Vortex-ready)
+│   ├── data/
+│   │   ├── art/ui/swf/                # Font glyph assets (game files)
+│   │   ├── font/
+│   │   │   ├── *.fnt                  # Patched font config files
+│   │   │   ├── *.ttc                  # Font files (TrueType collections)
+│   │   │   └── *.ttf                  # Font files (TrueType)
+│   │   └── sound/
+│   ├── modinfo.json                   # Vortex metadata
+│   ├── info.json                      # Nexus Mods metadata
+│   ├── installInfo.json               # Vortex installer config
+│   ├── Engine.ucs                     # Resource file (game data)
+│   └── EnginLoc.sga0                  # Original archive (reference)
+│
+├── backup/                            # Local backups (git-ignored)
+├── .gitignore                         # Git ignore rules
+├── README.md                          # This file
+└── FONT_FIX_README.md                 # Original technical documentation
 ```
+
+### Distribution
+
+When distributing to players, include only the `mod/` folder contents:
+- All `.fnt`, `.ttc`, `.ttf`, and `.gfx` files
+- Metadata files (modinfo.json, info.json)
+- Do NOT include scripts or development tools
 
 ## Troubleshooting
 
 ### Issue: "Cannot find relic.exe"
+
 **Solution:** Run `.\setup_relic_tool.ps1` first to install tools.
 
 ### Issue: "No .sga file found"
+
 **Solution:** Ensure you're in the correct locale folder and the `.sga` hasn't been renamed or moved.
 
 ### Issue: Text still clips after patching
+
 **Solutions:**
+
 - Try `--size 32` or `--size 30` (smaller value)
 - Use `--mode all` instead of `fallback-only`
 - Check if you need to remove the original `.sga` (game loads unpacked `data/` folder instead)
 
 ### Issue: Font replacement didn't work
+
 **Ensure:**
+
 - YaHei fonts exist in `data/font/` (check with `dir data\font\msyh.ttc`)
 - Regex pattern matches existing font names in `.fnt` files
 - File names in `.fnt` entries use correct case/spelling
