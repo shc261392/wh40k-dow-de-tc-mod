@@ -1,0 +1,40 @@
+# Virtual environments
+.venv/
+.venv-relic/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Generated archives
+*.sga
+!EnginLoc.sga0
+!data/
+
+# Backups and temp files
+*.bak
+backup/
+*.tmp
+*.old
+~*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Python
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.coverage
+
+# Game-specific
+*.arciv

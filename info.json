@@ -1,0 +1,86 @@
+{
+  "name": "WH40K DOW DE - Traditional Chinese Locale Font Fix",
+  "author": "Community",
+  "description": "Comprehensive font-size and rendering fix for Traditional Chinese locale in Warhammer 40,000: Dawn of War - Definitive Edition. Resolves UI text clipping and scaling on high-resolution displays.",
+  "version": "1.0.0",
+  "nexusMods": {
+    "modId": null,
+    "category": "Utility",
+    "visibility": "public"
+  },
+  "source": {
+    "github": "https://github.com/[USER]/wh40k-dow-de-tc-mod",
+    "nexusMods": "https://www.nexusmods.com/warhammer40kdawnofwar/mods/[MOD_ID]"
+  },
+  "compatibility": {
+    "gameVersions": ["2.02.0"],
+    "platforms": ["Windows"]
+  },
+  "requirements": [
+    {
+      "name": "Python",
+      "version": "3.8+",
+      "note": "Automatically installed with setup script"
+    },
+    {
+      "name": "relic-tool-sga",
+      "version": "*",
+      "note": "Installed by setup_relic_tool.ps1"
+    }
+  ],
+  "files": [
+    {
+      "name": "setup_relic_tool.ps1",
+      "description": "Install virtual environment and SGA manipulation tools"
+    },
+    {
+      "name": "unpack_chinese_locale.ps1",
+      "description": "Extract EnginLoc.sga archive to data/ folder with auto-backup"
+    },
+    {
+      "name": "apply_font_fix.py",
+      "description": "Main patching script for .fnt font configuration files"
+    },
+    {
+      "name": "repack_chinese_locale.ps1",
+      "description": "Optional: repack modified data/ folder into new .sga archive"
+    },
+    {
+      "name": "FONT_FIX_README.md",
+      "description": "Technical documentation and original research notes"
+    }
+  ],
+  "usage": {
+    "noobFriendly": true,
+    "complexity": "Beginner to Intermediate",
+    "quickStart": "Run setup_relic_tool.ps1, then unpack_chinese_locale.ps1, then apply_font_fix.py with default options (size 34, mode fallback-only)",
+    "advancedOptions": "See README.md for font size tuning, --mode all option, and Microsoft YaHei replacement"
+  },
+  "keywords": [
+    "localization",
+    "chinese",
+    "font",
+    "ui-fix",
+    "text-clipping",
+    "4k",
+    "utility",
+    "dawn-of-war",
+    "warhammer-40k"
+  ],
+  "changelog": {
+    "1.0.0": [
+      "Initial release",
+      "Anti-clipping fallback profile (sizeDefault adjustment)",
+      "Full scaling profile (all size* keys)",
+      "Microsoft YaHei font replacement option",
+      "Dry-run mode for preview before applying",
+      "Vortex Mod Manager support"
+    ]
+  },
+  "notes": {
+    "installation": "Extract to Engine/Locale/Chinese folder in your DoW:DE installation. No repack needed—game loads unpacked data/ folder directly.",
+    "backups": "Original .sga backed up automatically in backup/ folder. Each .fnt gets a .bak backup.",
+    "performance": "No runtime performance impact—all fixes are applied offline to .fnt files.",
+    "compatibility": "No conflicts with other mods. Works with any gameplay/cosmetic mods."
+  }
+}
