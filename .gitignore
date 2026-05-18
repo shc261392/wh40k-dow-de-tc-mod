@@ -1,18 +1,10 @@
-# Virtual environments
-.venv/
-.venv-relic/
-venv/
-env/
-scripts/.venv-relic/
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-
-# Generated archives
+# Game files (original, not part of mod distribution)
+Engine.ucs
+EnginLoc.sga
+EnginLoc.sga0
 *.sga
-!EnginLoc.sga0
-!data/
+
+# Virtual environments
 
 # Backups and temp files
 *.bak

@@ -37,21 +37,30 @@ The fix is especially critical for **4K and high-resolution displays** where def
 
 ### For Players (End-User Installation)
 
-1. **Extract the entire mod folder to your DoW:DE installation:**
+**Prerequisites:**
+- You already have `Engine.ucs` and `EnginLoc.sga` in `Engine/Locale/Chinese/` (from your DoW:DE installation)
+
+**Installation Steps:**
+
+1. **Download/extract this mod to `Engine/Locale/Chinese/`:**
    ```
-   Extract to: %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\
+   Extract repo contents to: %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\
+   
+   This adds: data/, scripts/, mod/ folders and documentation
    ```
-   This places all required files: `Engine.ucs`, `data/`, `EnginLoc.sga0`, metadata, etc.
 
 2. **Remove or rename the original `EnginLoc.sga` file:**
    ```powershell
-   Rename-Item EnginLoc.sga EnginLoc.sga.bak
+   Rename-Item EnginLoc.sga EnginLoc.sga.old
    ```
    This ensures the game loads the patched `data/` folder instead of the original archive.
 
-3. **Launch Dawn of War: Definitive Edition** — Chinese text will now display with corrected font sizing ✅
+3. **Launch Dawn of War: Definitive Edition** — Chinese text displays with corrected font sizing ✅
 
-**Vortex Installation:** If using Vortex Mod Manager, let it deploy the entire folder automatically, then rename/remove the original `.sga`.
+**Using Vortex Mod Manager:**
+- Let Vortex download and deploy the mod to `Engine/Locale/Chinese/`
+- Then manually rename the original `EnginLoc.sga` to `EnginLoc.sga.old`
+- Activate the mod in Vortex
 
 ### For Developers (Customizing the Fix)
 
@@ -172,7 +181,7 @@ All scripts are in the `scripts/` folder:
 
 ## Vortex Mod Manager Support
 
-This mod is **Vortex-ready**. The `mod/` folder can be packaged for Nexus Mods.
+This mod is **Vortex-ready**. The repository can be packaged for Nexus Mods.
 
 ### For Players Installing via Vortex
 
@@ -180,9 +189,14 @@ This mod is **Vortex-ready**. The `mod/` folder can be packaged for Nexus Mods.
 2. **Install via Vortex:**
    - Click "Install" in Vortex
    - Deploy to your DoW:DE installation
-3. **Activate** the mod in Vortex's mod list
-4. Remove or rename the original `EnginLoc.sga` file
-5. Launch the game—no scripts required!
+3. **Post-deployment (important):**
+   - Navigate to `Engine/Locale/Chinese/`
+   - Rename or remove `EnginLoc.sga` to `EnginLoc.sga.old`
+   - Game will now load the patched `data/` folder
+4. **Activate** the mod in Vortex's mod list
+5. Launch the game!
+
+**Note:** The mod is a folder overlay; it doesn't replace the original `.sga` file. You must manually disable the `.sga` for the patched data to be used.
 
 ### For Developers
 
@@ -203,10 +217,8 @@ The `mod/` folder metadata is Vortex-compatible:
 ## File Structure
 
 ```
-wh40k-dow-de-tc-mod/
-├── Engine.ucs                         # Game core resource file (REQUIRED)
-├── EnginLoc.sga0                      # Original .sga backup (reference)
-├── data/                              # Game locale data (REQUIRED for game)
+wh40k-dow-de-tc-mod/                  (Git repository)
+├── data/                              # PATCHED game locale files (included in repo)
 │   ├── art/ui/swf/                    # Font glyph assets
 │   ├── font/
 │   │   ├── *.fnt                      # Patched font config files
@@ -214,37 +226,43 @@ wh40k-dow-de-tc-mod/
 │   │   └── *.ttf                      # Font files (TrueType)
 │   └── sound/
 │
-├── scripts/                           # Development tools (NOT for players)
-│   ├── setup_relic_tool.ps1           # Install Python venv + SGA tools
-│   ├── unpack_chinese_locale.ps1      # Unpack .sga archive
-│   ├── apply_font_fix.py              # Font patching logic
-│   └── repack_chinese_locale.ps1      # Repack to .sga archive
+├── scripts/                           # Development tools (included in repo)
+│   ├── setup_relic_tool.ps1           
+│   ├── unpack_chinese_locale.ps1      
+│   ├── apply_font_fix.py              
+│   └── repack_chinese_locale.ps1      
 │
-├── mod/                               # Vortex metadata only
-│   ├── modinfo.json                   # Vortex mod configuration
-│   ├── info.json                      # Nexus Mods metadata
-│   └── installInfo.json               # Vortex installer config
+├── mod/                               # Vortex metadata (included in repo)
+│   ├── modinfo.json                   
+│   ├── info.json                      
+│   └── installInfo.json               
 │
-├── backup/                            # Local backups (git-ignored)
-├── .gitignore                         # Git ignore rules
-├── README.md                          # This file
-└── FONT_FIX_README.md                 # Original technical documentation
+├── .gitignore                         
+├── README.md                          
+└── FONT_FIX_README.md                 
+
+Engine/Locale/Chinese/ (Deployment directory - local only, not in repo)
+├── Engine.ucs                         # Original game file (from DoW:DE install)
+├── EnginLoc.sga                       # Original .sga (from DoW:DE install)
+├── data/                              # Extracted from repo
+├── scripts/                           # Extracted from repo
+├── mod/                               # Extracted from repo
+└── backup/                            # Local backups (git-ignored)
 ```
 
-### Deployment
+### What's in the Git Repository
 
-**For players/installation:**
-1. Extract entire folder to `Engine/Locale/Chinese/`
-2. Automatically includes: `Engine.ucs`, `data/`, and `EnginLoc.sga0`
-3. Remove or rename the original `EnginLoc.sga` file (game will load unpacked `data/` instead)
-4. Game is ready to run
+Only the **minimal changes needed for deployment**:
+- ✅ `data/` — Patched font configuration and UI files
+- ✅ `scripts/` — Development/customization tools
+- ✅ `mod/` — Vortex and Nexus Mods metadata
+- ✅ Documentation and config files
 
-**What Vortex will deploy:**
-- `Engine.ucs` (root)
-- `data/` folder (root)
-- `EnginLoc.sga0` (root, for reference)
-- Metadata files from `mod/` folder
-- Scripts are optional (developers only)
+### What's NOT in Git
+
+- ❌ `Engine.ucs` — Original game file (already in your DoW:DE installation)
+- ❌ `EnginLoc.sga` — Original game archive (already in your DoW:DE installation)
+- ❌ `backup/` — Local backups (git-ignored)
 
 ## Troubleshooting
 
