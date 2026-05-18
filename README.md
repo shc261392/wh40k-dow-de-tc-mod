@@ -6,14 +6,17 @@
 
 This repository contains:
 
-- **Distributable Mod** (`mod/` folder): Pre-configured game files ready to install via Vortex or manually
+- **Game Files** (`data/`, `Engine.ucs`, `EnginLoc.sga0`): Ready-to-deploy mod content
 - **Development Tools** (`scripts/` folder): Utilities for unpacking `.sga` archives, patching `.fnt` files, and repacking
+- **Metadata** (`mod/` folder): Vortex and Nexus Mods configuration
 
 The fix is especially critical for **4K and high-resolution displays** where default font sizes cause text to overflow UI elements.
 
 ### For End Users (Playing)
 
-- Extract the `mod/` folder contents to `Engine/Locale/Chinese` in your DoW:DE installation
+- Extract the **entire folder** to `Engine/Locale/Chinese` in your DoW:DE installation
+- The game will load `data/` automatically
+- Remove or rename the original `EnginLoc.sga` to disable the old archive
 - No scripts needed—it's a drop-in mod
 
 ### For Developers (Customizing)
@@ -34,16 +37,21 @@ The fix is especially critical for **4K and high-resolution displays** where def
 
 ### For Players (End-User Installation)
 
-1. **Extract the `mod/` folder to your DoW:DE installation:**
-
+1. **Extract the entire mod folder to your DoW:DE installation:**
    ```
-   Extract mod/data → %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\data
-   Extract mod/sound → %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\sound
+   Extract to: %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\
    ```
+   This places all required files: `Engine.ucs`, `data/`, `EnginLoc.sga0`, metadata, etc.
 
-   Or use **Vortex Mod Manager** to deploy automatically.
+2. **Remove or rename the original `EnginLoc.sga` file:**
+   ```powershell
+   Rename-Item EnginLoc.sga EnginLoc.sga.bak
+   ```
+   This ensures the game loads the patched `data/` folder instead of the original archive.
 
-2. **Remove or rename the original `EnginLoc.sga`** so the game loads unpacked files.
+3. **Launch Dawn of War: Definitive Edition** — Chinese text will now display with corrected font sizing ✅
+
+**Vortex Installation:** If using Vortex Mod Manager, let it deploy the entire folder automatically, then rename/remove the original `.sga`.
 
 ### For Developers (Customizing the Fix)
 
@@ -196,26 +204,26 @@ The `mod/` folder metadata is Vortex-compatible:
 
 ```
 wh40k-dow-de-tc-mod/
-├── data/                              # Game-loadable files (must be in this location)
-│   ├── art/ui/swf/                    # Font glyph assets (game files)
+├── Engine.ucs                         # Game core resource file (REQUIRED)
+├── EnginLoc.sga0                      # Original .sga backup (reference)
+├── data/                              # Game locale data (REQUIRED for game)
+│   ├── art/ui/swf/                    # Font glyph assets
 │   ├── font/
 │   │   ├── *.fnt                      # Patched font config files
 │   │   ├── *.ttc                      # Font files (TrueType collections)
 │   │   └── *.ttf                      # Font files (TrueType)
 │   └── sound/
 │
-├── scripts/                           # Development tools (not deployed to players)
-│   ├── setup_relic_tool.ps1           # Install dependencies (Python venv + SGA tools)
+├── scripts/                           # Development tools (NOT for players)
+│   ├── setup_relic_tool.ps1           # Install Python venv + SGA tools
 │   ├── unpack_chinese_locale.ps1      # Unpack .sga archive
 │   ├── apply_font_fix.py              # Font patching logic
 │   └── repack_chinese_locale.ps1      # Repack to .sga archive
 │
-├── mod/                               # Vortex metadata (package info only)
+├── mod/                               # Vortex metadata only
 │   ├── modinfo.json                   # Vortex mod configuration
 │   ├── info.json                      # Nexus Mods metadata
-│   ├── installInfo.json               # Vortex installer config
-│   ├── Engine.ucs                     # Resource file (game data)
-│   └── EnginLoc.sga0                  # Original archive (reference)
+│   └── installInfo.json               # Vortex installer config
 │
 ├── backup/                            # Local backups (git-ignored)
 ├── .gitignore                         # Git ignore rules
@@ -225,16 +233,18 @@ wh40k-dow-de-tc-mod/
 
 ### Deployment
 
-**For players installing the mod:**
-1. Extract the entire folder to `Engine/Locale/Chinese/`
-2. The `data/` folder will be in the correct location automatically
-3. Remove or rename the original `EnginLoc.sga` file
-4. Game loads the patched `data/` folder
+**For players/installation:**
+1. Extract entire folder to `Engine/Locale/Chinese/`
+2. Automatically includes: `Engine.ucs`, `data/`, and `EnginLoc.sga0`
+3. Remove or rename the original `EnginLoc.sga` file (game will load unpacked `data/` instead)
+4. Game is ready to run
 
-**For Vortex distribution:**
-- Include `data/` folder (all game files)
-- Include `mod/` folder (metadata)
-- Exclude `scripts/` folder (development tools only)
+**What Vortex will deploy:**
+- `Engine.ucs` (root)
+- `data/` folder (root)
+- `EnginLoc.sga0` (root, for reference)
+- Metadata files from `mod/` folder
+- Scripts are optional (developers only)
 
 ## Troubleshooting
 
