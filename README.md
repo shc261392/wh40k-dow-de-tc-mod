@@ -5,16 +5,19 @@
 ## Overview
 
 This repository contains:
+
 - **Distributable Mod** (`mod/` folder): Pre-configured game files ready to install via Vortex or manually
 - **Development Tools** (`scripts/` folder): Utilities for unpacking `.sga` archives, patching `.fnt` files, and repacking
 
 The fix is especially critical for **4K and high-resolution displays** where default font sizes cause text to overflow UI elements.
 
 ### For End Users (Playing)
+
 - Extract the `mod/` folder contents to `Engine/Locale/Chinese` in your DoW:DE installation
 - No scripts needed—it's a drop-in mod
 
 ### For Developers (Customizing)
+
 - Use the `scripts/` folder to unpack, patch, and repack the locale archive
 - Requires Python 3.8+ and the MAK Relic SGA tools
 
@@ -32,10 +35,12 @@ The fix is especially critical for **4K and high-resolution displays** where def
 ### For Players (End-User Installation)
 
 1. **Extract the `mod/` folder to your DoW:DE installation:**
+
    ```
    Extract mod/data → %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\data
    Extract mod/sound → %STEAM%\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\sound
    ```
+
    Or use **Vortex Mod Manager** to deploy automatically.
 
 2. **Remove or rename the original `EnginLoc.sga`** so the game loads unpacked files.
@@ -43,6 +48,7 @@ The fix is especially critical for **4K and high-resolution displays** where def
 ### For Developers (Customizing the Fix)
 
 #### Prerequisites
+
 - **Windows 10+** (PowerShell 5.0+) or **WSL 2** on other platforms
 - **Python 3.8+** (will be auto-installed in isolated venv)
 - **Dawn of War - Definitive Edition** (Steam)
@@ -51,9 +57,11 @@ The fix is especially critical for **4K and high-resolution displays** where def
 #### Initial Setup
 
 1. **Install dependencies (one-time):**
+
    ```powershell
    .\scripts\setup_relic_tool.ps1
    ```
+
    This creates a local Python virtual environment and installs `relic-tool-sga` for archive manipulation.
 
 ## Quick Start (Developers)
@@ -61,23 +69,28 @@ The fix is especially critical for **4K and high-resolution displays** where def
 ### Option A: No-Repack Method (Recommended)
 
 1. **Unpack the locale:**
+
    ```powershell
    .\scripts\unpack_chinese_locale.ps1
    ```
+
    - Backs up original `.sga` to `backup/`
    - Extracts contents to a temporary location
 
 2. **Preview the fix (dry-run):**
+
    ```powershell
    .\.venv-relic\Scripts\python.exe scripts\apply_font_fix.py --dry-run --restore-from-bak --mode fallback-only --size 34
    ```
 
 3. **Apply the fix:**
+
    ```powershell
    .\.venv-relic\Scripts\python.exe scripts\apply_font_fix.py --restore-from-bak --mode fallback-only --size 34
    ```
 
 4. **Remove the original `.sga`** (game loads unpacked folder instead):
+
    ```powershell
    Remove-Item EnginLoc.sga -Force
    ```
@@ -109,12 +122,14 @@ Try incrementally and preview with `--dry-run` first.
 To replace Noto Sans TC and Gulim fonts with Microsoft YaHei (mainland-standard Chinese font):
 
 1. **Pre-install YaHei fonts** (usually already on Windows):
+
    ```powershell
    Copy-Item "C:\Windows\Fonts\msyh.ttc" "./data/font/msyh.ttc" -Force
    Copy-Item "C:\Windows\Fonts\msyhbd.ttc" "./data/font/msyhbd.ttc" -Force
    ```
 
 2. **Apply fix with font replacement:**
+
    ```powershell
    .\.venv-relic\Scripts\python.exe scripts\apply_font_fix.py `
      --restore-from-bak `
@@ -164,6 +179,7 @@ This mod is **Vortex-ready**. The `mod/` folder can be packaged for Nexus Mods.
 ### For Developers
 
 The `mod/` folder metadata is Vortex-compatible:
+
 - `modinfo.json` — Vortex mod configuration
 - `installInfo.json` — Vortex installer instructions
 - `info.json` — Nexus Mods metadata
@@ -180,21 +196,22 @@ The `mod/` folder metadata is Vortex-compatible:
 
 ```
 wh40k-dow-de-tc-mod/
-├── scripts/                           # Development tools
+├── data/                              # Game-loadable files (must be in this location)
+│   ├── art/ui/swf/                    # Font glyph assets (game files)
+│   ├── font/
+│   │   ├── *.fnt                      # Patched font config files
+│   │   ├── *.ttc                      # Font files (TrueType collections)
+│   │   └── *.ttf                      # Font files (TrueType)
+│   └── sound/
+│
+├── scripts/                           # Development tools (not deployed to players)
 │   ├── setup_relic_tool.ps1           # Install dependencies (Python venv + SGA tools)
 │   ├── unpack_chinese_locale.ps1      # Unpack .sga archive
 │   ├── apply_font_fix.py              # Font patching logic
 │   └── repack_chinese_locale.ps1      # Repack to .sga archive
 │
-├── mod/                               # Distributable mod (Vortex-ready)
-│   ├── data/
-│   │   ├── art/ui/swf/                # Font glyph assets (game files)
-│   │   ├── font/
-│   │   │   ├── *.fnt                  # Patched font config files
-│   │   │   ├── *.ttc                  # Font files (TrueType collections)
-│   │   │   └── *.ttf                  # Font files (TrueType)
-│   │   └── sound/
-│   ├── modinfo.json                   # Vortex metadata
+├── mod/                               # Vortex metadata (package info only)
+│   ├── modinfo.json                   # Vortex mod configuration
 │   ├── info.json                      # Nexus Mods metadata
 │   ├── installInfo.json               # Vortex installer config
 │   ├── Engine.ucs                     # Resource file (game data)
@@ -206,12 +223,18 @@ wh40k-dow-de-tc-mod/
 └── FONT_FIX_README.md                 # Original technical documentation
 ```
 
-### Distribution
+### Deployment
 
-When distributing to players, include only the `mod/` folder contents:
-- All `.fnt`, `.ttc`, `.ttf`, and `.gfx` files
-- Metadata files (modinfo.json, info.json)
-- Do NOT include scripts or development tools
+**For players installing the mod:**
+1. Extract the entire folder to `Engine/Locale/Chinese/`
+2. The `data/` folder will be in the correct location automatically
+3. Remove or rename the original `EnginLoc.sga` file
+4. Game loads the patched `data/` folder
+
+**For Vortex distribution:**
+- Include `data/` folder (all game files)
+- Include `mod/` folder (metadata)
+- Exclude `scripts/` folder (development tools only)
 
 ## Troubleshooting
 
