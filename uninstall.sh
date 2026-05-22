@@ -1,0 +1,165 @@
+#!/usr/bin/env bash
+# =============================================================================
+# uninstall.sh — WH40K DoW:DE Traditional Chinese Locale Mod reverter
+#
+# Restores the game to its pre-mod state by:
+#   1. Reading the last deploy state from .copilot_workspace/last_deploy.env
+#   2. Removing deployed data/ and Engine.ucs from the game's locale folder
+#   3. Re-enabling EnginLoc.sga (renaming back from .disabled)
+#   4. Optionally restoring from the timestamped backup
+#
+# Usage:
+#   bash uninstall.sh [--game-dir PATH] [--dry-run] [--help]
+#   make uninstall
+# =============================================================================
+set -euo pipefail
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEPLOY_STATE="${REPO_ROOT}/.copilot_workspace/last_deploy.env"
+
+GAME_DIR=""
+DRY_RUN=false
+
+DEPLOY_DIRS=(data)
+DEPLOY_FILES=(Engine.ucs)
+LOCALE_SUBPATH="Engine/Locale/Chinese"
+
+log()  { printf "${CYAN}▶${RESET} %s\n" "$*"; }
+ok()   { printf "${GREEN}✓${RESET} %s\n" "$*"; }
+warn() { printf "${YELLOW}⚠${RESET}  %s\n" "$*"; }
+err()  { printf "${RED}✗${RESET}  %s\n" "$*" >&2; }
+die()  { err "$*"; exit 1; }
+
+usage() {
+    cat <<EOF
+Usage: bash uninstall.sh [OPTIONS]
+
+Reverts a previous mod deployment. Reads deploy state from
+.copilot_workspace/last_deploy.env (written by deploy.sh).
+
+Options:
+  --game-dir PATH   Override the stored game directory
+  --dry-run         Show what would be removed without writing anything
+  --help            Show this help message
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --game-dir)  GAME_DIR="$2"; shift 2 ;;
+        --dry-run)   DRY_RUN=true; shift ;;
+        --help|-h)   usage; exit 0 ;;
+        *) die "Unknown option: $1 (use --help)" ;;
+    esac
+done
+
+printf "\n${BOLD}WH40K DoW:DE — Traditional Chinese Locale Mod Uninstaller${RESET}\n\n"
+
+# ── Load stored deploy state ─────────────────────────────────────────────────
+BACKUP_STAMP=""
+BACKUP_DIR_STORED=""
+
+if [[ -f "$DEPLOY_STATE" ]]; then
+    # shellcheck disable=SC1090
+    source "$DEPLOY_STATE"
+    BACKUP_STAMP="${BACKUP_STAMP:-}"
+    BACKUP_DIR_STORED="${BACKUP_DIR:-}"
+    [[ -z "$GAME_DIR" ]] && GAME_DIR="${GAME_DIR:-}"  # already set from state
+    log "Loaded deploy state: ${DEPLOY_STATE}"
+else
+    warn "No deploy state found at ${DEPLOY_STATE}"
+    warn "Falling back to DOW_GAME_DIR env var or --game-dir flag."
+fi
+
+# Allow CLI / env override
+[[ -n "${DOW_GAME_DIR:-}" && -z "$GAME_DIR" ]] && GAME_DIR="$DOW_GAME_DIR"
+
+if [[ -z "$GAME_DIR" ]]; then
+    err "Could not determine game directory."
+    err "Either re-run deploy.sh first, or pass --game-dir PATH."
+    exit 1
+fi
+
+LOCALE_TARGET="${GAME_DIR}/${LOCALE_SUBPATH}"
+[[ -d "$LOCALE_TARGET" ]] || die "Locale directory not found: $LOCALE_TARGET"
+
+printf "Target: %s\n" "$LOCALE_TARGET"
+$DRY_RUN && printf "${YELLOW}[DRY RUN — no files will be written]${RESET}\n"
+printf "\n"
+
+# ── 1. Re-enable EnginLoc.sga ────────────────────────────────────────────────
+SGA_DISABLED="${LOCALE_TARGET}/EnginLoc.sga.disabled"
+SGA_ACTIVE="${LOCALE_TARGET}/EnginLoc.sga"
+
+if [[ -f "$SGA_DISABLED" ]]; then
+    log "Re-enabling EnginLoc.sga..."
+    if ! $DRY_RUN; then
+        mv "$SGA_DISABLED" "$SGA_ACTIVE"
+        ok "Renamed EnginLoc.sga.disabled → EnginLoc.sga"
+    else
+        warn "[DRY RUN] Would rename EnginLoc.sga.disabled → EnginLoc.sga"
+    fi
+elif [[ -f "$SGA_ACTIVE" ]]; then
+    ok "EnginLoc.sga already active (not renamed by deploy)"
+else
+    warn "EnginLoc.sga not found in either state — skipping"
+fi
+
+# ── 2. Remove deployed data/ ─────────────────────────────────────────────────
+for d in "${DEPLOY_DIRS[@]}"; do
+    target="${LOCALE_TARGET}/${d}"
+    if [[ -d "$target" ]]; then
+        log "Removing deployed directory: ${target}"
+        if ! $DRY_RUN; then
+            rm -rf "$target"
+            ok "Removed ${target}"
+        else
+            warn "[DRY RUN] Would remove: ${target}"
+        fi
+    else
+        warn "Directory not found (already removed?): ${target}"
+    fi
+done
+
+# ── 3. Remove deployed files ─────────────────────────────────────────────────
+for f in "${DEPLOY_FILES[@]}"; do
+    target="${LOCALE_TARGET}/${f}"
+    if [[ -f "$target" ]]; then
+        log "Removing deployed file: ${target}"
+        if ! $DRY_RUN; then
+            rm -f "$target"
+            ok "Removed ${target}"
+        else
+            warn "[DRY RUN] Would remove: ${target}"
+        fi
+    else
+        warn "File not found (already removed?): ${target}"
+    fi
+done
+
+# ── 4. Optionally restore from backup ────────────────────────────────────────
+if [[ -n "$BACKUP_DIR_STORED" && -d "$BACKUP_DIR_STORED" ]]; then
+    log "Restoring backup from ${BACKUP_DIR_STORED} ..."
+    if ! $DRY_RUN; then
+        rsync -a "${BACKUP_DIR_STORED}/" "${LOCALE_TARGET}/"
+        ok "Backup restored to ${LOCALE_TARGET}"
+    else
+        warn "[DRY RUN] Would restore from ${BACKUP_DIR_STORED}"
+    fi
+else
+    warn "No backup directory found — skipping restore step"
+    warn "(EnginLoc.sga has been re-enabled; game should load original packed locale)"
+fi
+
+# ── 5. Clear stored deploy state ─────────────────────────────────────────────
+if ! $DRY_RUN && [[ -f "$DEPLOY_STATE" ]]; then
+    rm -f "$DEPLOY_STATE"
+    ok "Deploy state cleared"
+fi
+
+printf "\n${GREEN}${BOLD}Uninstall complete!${RESET}\n"
+printf "  The game will now load the original EnginLoc.sga locale archive.\n"
+printf "  To re-deploy: bash deploy.sh  (or: make deploy)\n\n"

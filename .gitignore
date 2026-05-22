@@ -1,19 +1,35 @@
-# Game files (original, not part of mod distribution)
-Engine.ucs
+# ── Game files (archives and generated binaries) ─────────────────────────────
+# Engine.ucs is tracked (mod content). SGA archives are NOT tracked.
 EnginLoc.sga
 EnginLoc.sga0
 *.sga
+*.sga.disabled
 
-# Virtual environments
+# ── Virtual environments ───────────────────────────────────────────────────────
+.venv
+.venv*/
 
-# Backups and temp files
+# ── Python build artifacts ─────────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.coverage
+__pycache__/
+*.pyc
+*.pyo
+
+# ── Backups and temp files ─────────────────────────────────────────────────────
 *.bak
 backup/
 *.tmp
 *.old
 ~*
 
-# IDE
+# ── Deploy state (written by deploy scripts at runtime) ──────────────────────
+.copilot_workspace/
+
+# ── OS / IDE ──────────────────────────────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
@@ -22,12 +38,5 @@ backup/
 .DS_Store
 Thumbs.db
 
-# Python
-dist/
-build/
-*.egg-info/
-.pytest_cache/
-.coverage
-
-# Game-specific
+# ── Game-specific ─────────────────────────────────────────────────────────────
 *.arciv
