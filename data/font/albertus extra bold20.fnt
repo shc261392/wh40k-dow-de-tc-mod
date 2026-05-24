@@ -2,7 +2,7 @@ font =
 {
 	type 		= "FreeType2";
 	name 		= "Andale Sans Bold";
-	file		= "msyh.ttc";
+	file		= "notosanstc-extrabold.ttf";
 
 	sizeDefault 	= 34;
 	size640		= 32;	
