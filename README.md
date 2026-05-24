@@ -180,3 +180,42 @@ See `FONT_FIX_README.md` for technical research notes.
 | Auto-deploy (`deploy.ps1`) | — | ✅ | ✅ |
 | SGA unpack/repack | ❌ | ✅ | ✅ |
 | `make` / uv (dev) | ✅ | ✅ | — |
+
+---
+
+## Known Issues / Troubleshooting
+
+### Tutorial prompt appears after first deploy
+
+**Symptom:** After running `deploy.sh` / `deploy.ps1` for the first time, the
+game shows the "Do you want to play the tutorial?" prompt when clicking Campaign.
+
+**Cause:** The game's locale-change detection reads
+`Profiles/Profile1/playercfg.lua` and may reset
+`Tutorial_DoWDE.HasClickedCampaign` to `false` when it detects modified locale
+files. This is game-internal behaviour; no script in this mod writes to
+`playercfg.lua`.
+
+**Fix:** Simply dismiss the tutorial prompt — the flag is set back to `true`
+immediately. The prompt will not appear again on subsequent launches with the
+same locale files.
+
+---
+
+### "緝" character appended to WA campaign subtitles
+
+**Symptom:** Voiced dialogue subtitles in the Winter Assault campaign show an
+extra character (緝, U+7DC9) at the end of each line.
+
+**Root cause (investigated and fixed):** `notosanstc-bold.ttf` has a glyph
+mapped at codepoint U+0000 (the null terminator). DoW's subtitle renderer reads
+the string including the null terminator and renders the font's glyph for that
+codepoint. Because `gillsans_11b.fnt` (the dialogue subtitle font) previously
+referenced `notosanstc-bold.ttf`, every subtitle ended with 緝.
+
+**Fix applied (commit `7055d8b`):** `gillsans_11b.fnt` and `gillsans_bold_16.fnt`
+now reference `notosanstc-medium.ttf`, which does not have a visible glyph at
+U+0000. The artifact is gone.
+
+If future font experiments re-introduce this file, avoid `notosanstc-bold.ttf`
+for any font definition that is used to render subtitle or in-game dialogue text.
