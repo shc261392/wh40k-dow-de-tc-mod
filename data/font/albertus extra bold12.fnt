@@ -2,7 +2,7 @@ font =
 {
 	type 		= "FreeType2";
 	name 		= "Gulim";
-	file		= "notosanstc-extrabold.ttf";
+	file		= "notosanstc-semibold.ttf";
 
 	sizeDefault 	= 34;
 	size640		= 32;	
