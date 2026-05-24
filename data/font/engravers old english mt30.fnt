@@ -4,7 +4,7 @@ font =
 	name 		= "Gulim";
 	file		= "NotoSerifTC-Bold.ttf";
 
-	sizeDefault 	= 32;
+	sizeDefault 	= 34;
 	size640		= 32;
 	size800		= 32;
 	size1024	= 32;

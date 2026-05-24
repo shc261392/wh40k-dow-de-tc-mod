@@ -88,6 +88,19 @@ done
 # Steam library discovery
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Convert a Windows-style VDF path to a WSL2 accessible path.
+# e.g. "D:\\SteamLibrary" -> "/mnt/d/SteamLibrary"
+_win_to_wsl() {
+    local p="$1"
+    # VDF uses \\ (double backslash) as path separator — replace pairs with /
+    p="${p//\\\\/\/}"
+    # Convert leading drive letter  D:/ -> /mnt/d/
+    if [[ "$p" =~ ^([A-Za-z]):(/.*)$ ]]; then
+        p="/mnt/${BASH_REMATCH[1],,}${BASH_REMATCH[2]}"
+    fi
+    echo "$p"
+}
+
 # Enumerate Steam library roots from libraryfolders.vdf
 _steam_library_roots() {
     local vdf_candidates=()
@@ -100,8 +113,8 @@ _steam_library_roots() {
         "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/libraryfolders.vdf"
     )
 
-    # WSL2: scan common Windows drive mounts (C–E)
-    for drv in c d e f; do
+    # WSL2: scan common Windows drive mounts (C–G)
+    for drv in c d e f g; do
         vdf_candidates+=(
             "/mnt/${drv}/Program Files (x86)/Steam/steamapps/libraryfolders.vdf"
             "/mnt/${drv}/SteamLibrary/steamapps/libraryfolders.vdf"
@@ -110,8 +123,15 @@ _steam_library_roots() {
 
     for vdf in "${vdf_candidates[@]}"; do
         [[ -f "$vdf" ]] || continue
-        # Extract "path" values from the VDF file
-        grep -oP '(?<="path"\s{1,8}")[^"]+' "$vdf" 2>/dev/null || true
+        # Extract "path" values and convert Windows paths to WSL paths.
+        # Note: PCRE variable-length lookbehinds are unsupported, so use sed.
+        while IFS= read -r raw; do
+            if [[ "$raw" =~ ^[A-Za-z]: ]]; then
+                _win_to_wsl "$raw"
+            else
+                echo "$raw"
+            fi
+        done < <(grep '"path"' "$vdf" 2>/dev/null | sed -E 's/.*"path"\s+"([^"]+)".*/\1/' || true)
         # Also add the directory containing the VDF itself (the default Steam lib)
         echo "$(dirname "$(dirname "$vdf")")"
     done
@@ -205,14 +225,12 @@ if ! $DRY_RUN; then
     if command -v uv &>/dev/null; then
         uv run python "${REPO_ROOT}/scripts/apply_font_fix.py" \
             --root "${REPO_ROOT}" \
-            --font noto-sans-tc \
             --restore-from-bak \
             --mode fallback-only \
             --size 34
     elif command -v python3 &>/dev/null; then
         python3 "${REPO_ROOT}/scripts/apply_font_fix.py" \
             --root "${REPO_ROOT}" \
-            --font noto-sans-tc \
             --restore-from-bak \
             --mode fallback-only \
             --size 34
@@ -223,7 +241,6 @@ if ! $DRY_RUN; then
 else
     uv run python "${REPO_ROOT}/scripts/apply_font_fix.py" \
         --root "${REPO_ROOT}" \
-        --font noto-sans-tc \
         --restore-from-bak \
         --mode fallback-only \
         --size 34 \
@@ -279,7 +296,38 @@ for f in "${DEPLOY_FILES[@]}"; do
     fi
 done
 
-# 6. Disable original EnginLoc.sga so game loads data/ instead
+# 6. Migrate campaign states: copy SC save progress into TC state slots
+#    This preserves WXP (Winter Assault) campaign progress when switching
+#    from the original Simplified Chinese locale to this TC mod.
+#    The migration is non-fatal: a warning is printed if it fails so that
+#    the rest of the deploy still completes.
+log "Migrating campaign states (SC → TC statenames)..."
+_run_migration() {
+    local py_runner
+    if command -v uv &>/dev/null; then
+        py_runner="uv run python"
+    elif command -v python3 &>/dev/null; then
+        py_runner="python3"
+    else
+        warn "No Python interpreter found; skipping campaign state migration."
+        warn "Run manually: python scripts/migrate_campaign_states.py"
+        return 0
+    fi
+
+    local extra_flags=()
+    $DRY_RUN && extra_flags+=("--dry-run")
+
+    $py_runner "${REPO_ROOT}/scripts/migrate_campaign_states.py" \
+        --profile Profile1 \
+        "${extra_flags[@]}" \
+        2>&1 | while IFS= read -r line; do printf "    %s\n" "$line"; done
+}
+if ! _run_migration; then
+    warn "Campaign state migration returned a non-zero exit — check output above."
+    warn "Your save files are unchanged; deploy will continue."
+fi
+
+# 7. Disable original EnginLoc.sga so game loads data/ instead
 SGA_PATH="${LOCALE_TARGET}/EnginLoc.sga"
 SGA_DISABLED="${LOCALE_TARGET}/EnginLoc.sga.disabled"
 
@@ -297,7 +345,7 @@ else
     warn "EnginLoc.sga not found — game may still load stale packed locale"
 fi
 
-# 7. Record deployment state for uninstall
+# 8. Record deployment state for uninstall
 if ! $DRY_RUN; then
     DEPLOY_STATE="${REPO_ROOT}/.copilot_workspace/last_deploy.env"
     mkdir -p "$(dirname "$DEPLOY_STATE")"

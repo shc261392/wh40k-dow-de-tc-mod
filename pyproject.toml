@@ -2,21 +2,16 @@
 name = "wh40k-dow-de-tc-mod"
 version = "1.0.0"
 description = "Traditional Chinese locale font & text fix for WH40K: Dawn of War – Definitive Edition"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = []
 
 [project.optional-dependencies]
 # SGA archive tools — needed only for repacking (optional; most workflows use the
 # unpacked data/ folder directly and skip SGA repacking entirely).
 sga = [
-    "relic-tool-sga",
-    "relic-tool-sga-v2",
+  "relic-tool-sga",
+  "relic-tool-sga-v2",
 ]
-
-[tool.uv]
-# Keep the project venv in .venv so scripts can reference it by convention.
-# The separate .venv-relic is only needed for relic SGA tooling (Windows-only
-# binary; install via `make setup-sga` when on Windows / Wine).
 
 [build-system]
 requires = ["hatchling"]
@@ -24,3 +19,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["scripts"]
+
+[tool.uv]
+# Keep the project venv in .venv so scripts can reference it by convention.
+# The separate .venv-relic is only needed for relic SGA tooling (Windows-only
+# binary; install via `make setup-sga` when on Windows / Wine).

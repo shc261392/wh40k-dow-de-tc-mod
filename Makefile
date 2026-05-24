@@ -42,23 +42,21 @@ setup-sga: ## Install relic SGA tools (required only for SGA repack; Windows/Win
 # ─────────────────────────────────────────────────────────────────────────────
 
 .PHONY: dry-run
-dry-run: ## Preview font-fix changes without writing (FONT / SIZE / MODE / PROFILE overridable)
+dry-run: ## Preview font-fix changes without writing (SIZE / MODE overridable)
 	$(PYTHON) $(SCRIPTS)/apply_font_fix.py \
 	    --root . \
-	    --font $(FONT) \
 	    --restore-from-bak \
 	    --mode $(MODE) \
-	    $(if $(PROFILE),--profile $(PROFILE),--size $(SIZE)) \
+	    --size $(SIZE) \
 	    --dry-run
 
 .PHONY: apply
 apply: ## Apply font-fix to data/font/*.fnt (writes files; auto-creates .bak)
 	$(PYTHON) $(SCRIPTS)/apply_font_fix.py \
 	    --root . \
-	    --font $(FONT) \
 	    --restore-from-bak \
 	    --mode $(MODE) \
-	    $(if $(PROFILE),--profile $(PROFILE),--size $(SIZE))
+	    --size $(SIZE)
 	@echo ""
 	@echo "✓ Font fix applied.  Run 'make deploy' to push to the game installation."
 
@@ -71,12 +69,14 @@ dry-run-tc: ## Preview TC text corrections without writing
 	$(PYTHON) $(SCRIPTS)/apply_tc_corrections.py --ucs Engine.ucs --dry-run
 
 .PHONY: list-fonts
-list-fonts: ## List available font presets
-	$(PYTHON) $(SCRIPTS)/apply_font_fix.py --list-fonts
+list-fonts: ## List font replacement options (--replace-font-file / --replace-font-match)
+	@echo "Font replacement options:"
+	@echo "  --replace-font-file FILE   e.g. msyh.ttc, notosans_m_16_xc"
+	@echo "  --replace-font-match REGEX e.g. NotoSansTC|Gulim (default)"
 
 .PHONY: list-profiles
-list-profiles: ## List available size profiles
-	$(PYTHON) $(SCRIPTS)/apply_font_fix.py --list-profiles
+list-profiles: ## Show size/mode options
+	@echo "Size: set via SIZE=N (default: 34)  Mode: fallback-only | all (default: fallback-only)"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SGA archive tools (optional, Windows/Wine)

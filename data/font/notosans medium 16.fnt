@@ -4,7 +4,7 @@ font =
 	name 		= "Andale Sans";
 	file		= "NotoSans-Medium-English.TTF";
 
-	sizeDefault 	= 32;
+	sizeDefault 	= 34;
 	size640		= 32;	
 	size1024	= 32;	
 	size1280 	= 32;

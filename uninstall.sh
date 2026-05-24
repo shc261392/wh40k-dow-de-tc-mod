@@ -90,6 +90,36 @@ printf "Target: %s\n" "$LOCALE_TARGET"
 $DRY_RUN && printf "${YELLOW}[DRY RUN — no files will be written]${RESET}\n"
 printf "\n"
 
+# ── 0. Sync TC mod progress back to SC state slots (before removing mod) ─────
+#    If the user made progress while the TC mod was active, this copies it
+#    back into the original SC (Simplified Chinese) campaign state files so
+#    progress is not lost when returning to the vanilla locale.
+log "Syncing TC campaign progress back to SC state slots..."
+_run_reverse_migration() {
+    local py_runner
+    if command -v uv &>/dev/null; then
+        py_runner="uv run python"
+    elif command -v python3 &>/dev/null; then
+        py_runner="python3"
+    else
+        warn "No Python interpreter found; skipping campaign state sync."
+        warn "Run manually: python scripts/migrate_campaign_states.py --reverse"
+        return 0
+    fi
+
+    local extra_flags=(--reverse)
+    $DRY_RUN && extra_flags+=(--dry-run)
+
+    $py_runner "${REPO_ROOT}/scripts/migrate_campaign_states.py" \
+        --profile Profile1 \
+        "${extra_flags[@]}" \
+        2>&1 | while IFS= read -r line; do printf "    %s\n" "$line"; done
+}
+if ! _run_reverse_migration; then
+    warn "Campaign state sync returned a non-zero exit — check output above."
+    warn "Your save files are unchanged; uninstall will continue."
+fi
+
 # ── 1. Re-enable EnginLoc.sga ────────────────────────────────────────────────
 SGA_DISABLED="${LOCALE_TARGET}/EnginLoc.sga.disabled"
 SGA_ACTIVE="${LOCALE_TARGET}/EnginLoc.sga"
@@ -125,9 +155,15 @@ for d in "${DEPLOY_DIRS[@]}"; do
 done
 
 # ── 3. Remove deployed files ─────────────────────────────────────────────────
+# Engine.ucs is required for the game to launch — only remove it when a backup
+# exists to restore from.  Without a backup the file must be left in place.
 for f in "${DEPLOY_FILES[@]}"; do
     target="${LOCALE_TARGET}/${f}"
     if [[ -f "$target" ]]; then
+        if [[ -z "$BACKUP_DIR_STORED" || ! -f "${BACKUP_DIR_STORED}/${f}" ]]; then
+            warn "Skipping removal of ${f} — no backup to restore; game requires this file"
+            continue
+        fi
         log "Removing deployed file: ${target}"
         if ! $DRY_RUN; then
             rm -f "$target"
