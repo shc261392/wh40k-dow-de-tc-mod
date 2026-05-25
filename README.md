@@ -3,7 +3,7 @@
 Unofficial Traditional Chinese patch for **Warhammer 40,000: Dawn of War – Definitive Edition**.  
 Fixes font size/weight, subtitle artifacts, and applies text corrections to `Engine.ucs`.
 
-> 本模組為《戰鎚40,000：戰爭黎明 決定版》的非官方繁體中文補丁，修正字型大小、字重、字幕殘字問題，並校正 `Engine.ucs` 的文字內容。  
+> 本模組為《戰鎚40,000：破曉之戰 決定版》的非官方繁體中文補丁，修正字型大小、字重、字幕殘字問題，並校正 `Engine.ucs` 的文字內容。  
 > **中文安裝說明請見下方 [繁體中文安裝說明](#繁體中文安裝說明)。**
 
 > **Download:** [Releases](https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest) — grab `wh40k-dow-de-tc-mod-v*.zip` (mod) and `vortex-ext-*.zip` (Vortex extension).

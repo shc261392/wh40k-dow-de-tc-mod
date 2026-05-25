@@ -59,148 +59,153 @@ Unofficial Traditional Chinese Patch
 Unofficial Traditional Chinese patch for DoW DE — fixes fonts, subtitle artifact, and text corrections. | 非官方繁體中文補丁，修正字型、字幕殘字及文字校正。
 ```
 
-### Description (BBCode — paste into the Nexus description editor)
+### Description (Markdown — paste into the Nexus description editor)
 
-```bbcode
-[center][size=5][b]Unofficial Traditional Chinese Patch[/b][/size]
-[size=3]Font Fixes + Text Corrections for Dawn of War – Definitive Edition[/size][/center]
+---
 
-[hr][/hr]
+# Unofficial Traditional Chinese Patch
 
-[size=4][b]What This Mod Fixes[/b][/size]
+Font fixes and text corrections for Warhammer 40,000: Dawn of War – Definitive Edition.
 
-[list]
-[*][b]Font size[/b] — All 13 FNT files corrected. Traditional Chinese glyphs no longer clip or overflow UI elements.
-[*][b]Font weight[/b] — Main menu uses lighter NotoSansTC weights. No more bold-on-bold rendering.
-[*][b]Subtitle artifact[/b] — The stray 緝 character that appeared at the end of every voiced Winter Assault subtitle line is gone.
-[*][b]Text corrections[/b] — Punctuation, typos, and missing sentence endings fixed in [font=Courier New]Engine.ucs[/font].
-[/list]
+---
 
-[hr][/hr]
+## What This Mod Fixes
 
-[size=4][b]Compatibility[/b][/size]
+- **Font size** — All 13 font files corrected. Traditional Chinese characters no longer clip or overflow the UI.
+- **Font weight** — Main menu uses lighter fonts. No more bold-on-bold text.
+- **Subtitle artifact** — A stray character (緝) that appeared at the end of every voiced subtitle in Winter Assault is removed.
+- **Text corrections** — Punctuation, typos, and missing sentence endings fixed.
 
-This mod only modifies files inside [font=Courier New]Engine\Locale\Chinese\[/font] — specifically font configs, UI art, sound, and [font=Courier New]Engine.ucs[/font]. It should be compatible with any other mod that does [b]not[/b] touch those same files. No formal compatibility testing has been conducted.
+---
 
-If you discover a conflict with another mod, please let me know in the [b]comments or posts[/b] tab below.
+## Compatibility
 
-[hr][/hr]
+This mod only changes files inside `Engine\Locale\Chinese\`. It should be compatible with any other mod that doesn't touch those same files. No formal compatibility testing has been done.
 
-[size=4][b]Requirements[/b][/size]
+If you find a conflict with another mod, let me know in the **comments** below.
 
-[list]
-[*]Warhammer 40,000: Dawn of War – Definitive Edition (Steam App 3556750)
-[/list]
+---
 
-[hr][/hr]
+## Requirements
 
-[size=4][b]Installation[/b][/size]
+- Warhammer 40,000: Dawn of War – Definitive Edition (Steam App 3556750)
 
-[size=3][b]Manual install (Windows)[/b][/size]
+---
 
-[list=1]
-[*]Extract the mod zip into your game's locale directory:[code]<Steam install>\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\[/code]After extraction you should see [font=Courier New]data\font\[/font], [font=Courier New]data\art\[/font], [font=Courier New]data\sound\[/font], and [font=Courier New]Engine.ucs[/font] inside that folder.
-[*]Rename the original archive so the loose files take priority:[code]EnginLoc.sga  →  EnginLoc.sga.disabled[/code]
-[*]Launch the game.
-[/list]
+## How to Install
 
-[b]Uninstall:[/b] Delete the extracted [font=Courier New]data\[/font] folder and [font=Courier New]Engine.ucs[/font], then rename [font=Courier New]EnginLoc.sga.disabled[/font] back to [font=Courier New]EnginLoc.sga[/font].
+### Manual (Windows)
 
-[size=3][b]Vortex Mod Manager[/b][/size]
+1. Download the mod zip from this page.
+2. Extract it into this folder:
+   ```
+   [Steam]\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\
+   ```
+3. In that same folder, find `EnginLoc.sga` and rename it to `EnginLoc.sga.disabled`.
+4. Start the game. Done!
 
-Vortex support requires a game extension that currently needs to be installed manually. This will be simplified once the extension is officially listed in Vortex — this section will be updated then.
+**To uninstall:**
+1. Go back to the same `Chinese\` folder.
+2. Delete the `data\` folder and `Engine.ucs` (the files from this mod).
+3. Rename `EnginLoc.sga.disabled` back to `EnginLoc.sga`.
+
+### Vortex Mod Manager
+
+Vortex support requires a game extension that currently needs to be set up manually.
+Once the extension is officially listed in Vortex, setup will be much simpler — instructions will be updated then.
 
 For now, use the manual install above.
 
-[hr][/hr]
+---
 
-[size=4][b]Known Issues[/b][/size]
+## Known Issues
 
-[size=3][b]Tutorial prompt on first launch[/b][/size]
-After first deploy, the game may show "Do you want to play the tutorial?" when clicking Campaign.
-This is game-internal locale-change detection. Just dismiss it — it will not reappear.
+**Tutorial prompt on first launch**
+After installing, the game may ask "Do you want to play the tutorial?" when you click Campaign. Just dismiss it — this only happens once.
 
-[size=3][b]Campaign progress[/b][/size]
-This mod does [b]not[/b] modify any save files or campaign progress. Deployment and uninstallation are fully reversible.
+**Campaign progress**
+This mod does **not** touch any save files or campaign progress. You can install and uninstall safely.
 
-[hr][/hr]
+---
 
-[size=4][b]Questions & Support[/b][/size]
+## Questions & Support
 
-Have a question, found a bug, or want to contribute a text correction? Post in the [b]comments[/b] or [b]posts[/b] tab on this page — that's the best way to reach me.
+Have a question or found an issue? Post in the **comments** on this page.
 
-[size=2][i](Source code also available at [url=https://github.com/shc261392/wh40k-dow-de-tc-mod]github.com/shc261392/wh40k-dow-de-tc-mod[/url] for reference.)[/i][/size]
+*(Source: [github.com/shc261392/wh40k-dow-de-tc-mod](https://github.com/shc261392/wh40k-dow-de-tc-mod))*
 
-[hr][/hr]
-[hr][/hr]
+---
+---
 
-[center][size=5][b]繁體中文說明[/b][/size][/center]
+# 繁體中文說明
 
-[hr][/hr]
+《戰鎚40,000：破曉之戰 決定版》非官方繁體中文補丁。
 
-[size=4][b]修正內容[/b][/size]
+---
 
-[list]
-[*][b]字型大小[/b] — 修正全部 13 個 FNT 字型設定檔，繁體中文字形不再被截斷或溢出介面元素。
-[*][b]字重[/b] — 主選單改用較細的 NotoSansTC 字重，消除雙重加粗現象。
-[*][b]字幕殘字[/b] — 修正《冬季攻擊》劇情語音字幕末尾出現多餘「緝」字的問題。
-[*][b]文字校正[/b] — 修正 [font=Courier New]Engine.ucs[/font] 中的標點符號、錯字及缺少句末標記等問題。
-[/list]
+## 修正內容
 
-[hr][/hr]
+- **字型大小** — 修正全部 13 個字型設定檔，繁體中文字形不再被截斷或溢出介面。
+- **字重** — 主選單改用較細字重，消除雙重加粗現象。
+- **字幕殘字** — 修正《冬季攻擊》劇情語音字幕末尾出現多餘「緝」字的問題。
+- **文字校正** — 修正標點符號、錯字及缺少句末標記等問題。
 
-[size=4][b]相容性[/b][/size]
+---
 
-本模組只修改 [font=Courier New]Engine\Locale\Chinese\[/font] 資料夾內的檔案（字型設定、介面圖片、音效及 [font=Courier New]Engine.ucs[/font]）。凡是不修改上述同一路徑的模組，理論上皆可與本模組相容。目前尚未進行正式的相容性測試。
+## 相容性
 
-若您發現與其他模組的衝突，歡迎在下方的[b]留言區或討論區[/b]告知。
+本模組只修改 `Engine\Locale\Chinese\` 資料夾內的檔案。凡是不修改相同路徑的模組，理論上皆可與本模組相容。目前尚未進行正式的相容性測試。
 
-[hr][/hr]
+若您發現與其他模組的衝突，歡迎在下方**留言區**告知。
 
-[size=4][b]需求[/b][/size]
+---
 
-[list]
-[*]《戰鎚40,000：戰爭黎明 決定版》Steam 版（App ID：3556750）
-[/list]
+## 需求
 
-[hr][/hr]
+- 《戰鎚40,000：破曉之戰 決定版》Steam 版（App ID：3556750）
 
-[size=4][b]安裝方式[/b][/size]
+---
 
-[size=3][b]手動安裝（Windows）[/b][/size]
+## 安裝方式
 
-[list=1]
-[*]將模組 zip 解壓縮至遊戲的語言資料夾：[code]<Steam 安裝路徑>\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\[/code]解壓縮後應可看到 [font=Courier New]data\font\[/font]、[font=Courier New]data\art\[/font]、[font=Courier New]data\sound\[/font] 及 [font=Courier New]Engine.ucs[/font]。
-[*]重新命名原始封存檔，讓散開的補丁檔案取得優先權：[code]EnginLoc.sga  →  EnginLoc.sga.disabled[/code]
-[*]啟動遊戲。
-[/list]
+### 手動安裝（Windows）
 
-[b]解除安裝：[/b]刪除解壓縮的 [font=Courier New]data\[/font] 資料夾及 [font=Courier New]Engine.ucs[/font]，再將 [font=Courier New]EnginLoc.sga.disabled[/font] 重新命名為 [font=Courier New]EnginLoc.sga[/font]。
+1. 從本頁面下載模組壓縮檔。
+2. 解壓縮至以下資料夾：
+   ```
+   [Steam]\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\
+   ```
+3. 在同一個資料夾內，找到 `EnginLoc.sga`，將它重新命名為 `EnginLoc.sga.disabled`。
+4. 啟動遊戲，完成！
 
-[size=3][b]Vortex Mod Manager[/b][/size]
+**解除安裝：**
+1. 回到相同的 `Chinese\` 資料夾。
+2. 刪除 `data\` 資料夾以及 `Engine.ucs`（本模組的檔案）。
+3. 將 `EnginLoc.sga.disabled` 重新命名回 `EnginLoc.sga`。
 
-Vortex 支援需要手動安裝遊戲擴充套件，步驟說明將在擴充套件正式列入 Vortex 支援名單後更新。
+### Vortex Mod Manager
+
+Vortex 支援需要手動安裝遊戲擴充套件，待擴充套件正式列入 Vortex 名單後，步驟將更簡單，屆時說明會一併更新。
 
 目前請使用上方的手動安裝方式。
 
-[hr][/hr]
+---
 
-[size=4][b]已知問題[/b][/size]
+## 已知問題
 
-[size=3][b]首次啟動出現教學提示[/b][/size]
-首次部署後，點選「戰役」可能出現「是否要進行教學？」的提示。這是遊戲內部偵測到語系切換的正常反應，忽略即可，之後不會再次出現。
+**首次啟動出現教學提示**
+安裝後首次點選「戰役」，遊戲可能詢問「是否要進行教學？」，忽略即可，只會出現一次。
 
-[size=3][b]戰役進度[/b][/size]
-本模組 [b]不會[/b] 修改任何存檔或戰役進度，部署與解除安裝皆可完全還原。
+**戰役進度**
+本模組**不會**修改任何存檔或戰役進度，可安心安裝與解除安裝。
 
-[hr][/hr]
+---
 
-[size=4][b]問題與回饋[/b][/size]
+## 問題與回饋
 
-有任何問題、發現錯誤，或想貢獻文字校正？請在本頁面的[b]留言區或討論區[/b]發文，這是聯繫我最好的方式。
+有任何問題或發現錯誤？請在本頁面的**留言區**留言。
 
-[size=2][i]（原始碼亦可在 [url=https://github.com/shc261392/wh40k-dow-de-tc-mod]github.com/shc261392/wh40k-dow-de-tc-mod[/url] 取得，供參考。）[/i][/size]
-```
+*（原始碼：[github.com/shc261392/wh40k-dow-de-tc-mod](https://github.com/shc261392/wh40k-dow-de-tc-mod)）*
 
 ---
 
