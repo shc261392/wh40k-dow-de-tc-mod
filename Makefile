@@ -143,11 +143,12 @@ package: apply ## Build distributable mod archive (.copilot_workspace/dist/PKG.z
 package-ext: ## Build Vortex extension zip (.copilot_workspace/dist/vortex-ext-*.zip)
 	@echo "▶ Packaging Vortex extension $(EXT_NAME).zip ..."
 	@rm -rf "$(DIST_DIR)/$(EXT_NAME)"
-	@mkdir -p "$(DIST_DIR)/$(EXT_NAME)/$(EXT_ID)"
-	@cp "$(EXT_DIR)/index.js"  "$(DIST_DIR)/$(EXT_NAME)/$(EXT_ID)/"
-	@cp "$(EXT_DIR)/info.json" "$(DIST_DIR)/$(EXT_NAME)/$(EXT_ID)/"
-	@[ -f "$(EXT_DIR)/gameart.jpg" ] && cp "$(EXT_DIR)/gameart.jpg" "$(DIST_DIR)/$(EXT_NAME)/$(EXT_ID)/" || true
-	@cd "$(DIST_DIR)/$(EXT_NAME)" && zip -r "../$(EXT_NAME).zip" "$(EXT_ID)/" -x "*.DS_Store"
+	@rm -f "$(DIST_DIR)/$(EXT_NAME).zip"
+	@mkdir -p "$(DIST_DIR)/$(EXT_NAME)"
+	@cp "$(EXT_DIR)/index.js"  "$(DIST_DIR)/$(EXT_NAME)/"
+	@cp "$(EXT_DIR)/info.json" "$(DIST_DIR)/$(EXT_NAME)/"
+	@[ -f "$(EXT_DIR)/gameart.jpg" ] && cp "$(EXT_DIR)/gameart.jpg" "$(DIST_DIR)/$(EXT_NAME)/" || true
+	@cd "$(DIST_DIR)/$(EXT_NAME)" && zip -r "../$(EXT_NAME).zip" . -x "*.DS_Store"
 	@rm -rf "$(DIST_DIR)/$(EXT_NAME)"
 	@echo "✓ $(DIST_DIR)/$(EXT_NAME).zip"
 	@echo "  Size: $$(du -sh "$(DIST_DIR)/$(EXT_NAME).zip" | cut -f1)"
