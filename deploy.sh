@@ -7,14 +7,21 @@
 #   • WSL2 (Windows Subsystem for Linux — accesses Windows paths via /mnt/c ...)
 #
 # Usage:
-#   bash deploy.sh [--game-dir PATH] [--dry-run] [--no-backup] [--help]
+#   bash deploy.sh [--game-dir PATH] [--dry-run] [--no-backup] [--mode MODE] [--help]
+#
+# Modes (--mode):
+#   loose   (default) Copy data/ loose files + disable EnginLoc.sga
+#   sga              Build EnginLocMod.sga from data/font/ and deploy alongside
+#                    EnginLoc.sga (no loose files; tests engine SGA priority)
 #
 # What it does:
 #   1. Auto-detect the game installation directory
 #   2. Create a timestamped backup of existing mod targets + EnginLoc.sga
 #   3. Apply font-fix via Python (writes patched .fnt files to data/font/)
-#   4. Copy data/, Engine.ucs to the game's Engine/Locale/Chinese/
-#   5. Disable EnginLoc.sga (rename to .disabled) so the game loads data/ instead
+#   [loose] 4. Copy data/, Engine.ucs to the game's Engine/Locale/Chinese/
+#   [loose] 5. Disable EnginLoc.sga (rename to .disabled) so game loads data/
+#   [sga]   4. Build EnginLocMod.sga from data/font/ using Archive.exe
+#   [sga]   5. Copy EnginLocMod.sga to Engine/Locale/Chinese/ (EnginLoc.sga stays enabled)
 #
 # Run: make deploy  —OR—  bash deploy.sh
 # =============================================================================
@@ -31,6 +38,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GAME_DIR=""
 DRY_RUN=false
 NO_BACKUP=false
+DEPLOY_MODE="loose"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP_DIR="${REPO_ROOT}/backup"
 MANIFEST_FILE="${BACKUP_DIR}/deploy_manifest_${STAMP}.txt"
@@ -61,7 +69,12 @@ Options:
   --game-dir PATH   Override auto-detected game installation directory
   --dry-run         Show what would be deployed without writing anything
   --no-backup       Skip backup step (not recommended)
+  --mode MODE       Deployment mode: loose (default) or sga
   --help            Show this help message
+
+Modes:
+  loose  Copy data/ loose files; disable EnginLoc.sga  (default)
+  sga    Build EnginLocMod.sga; keep EnginLoc.sga active (side-by-side test)
 
 Environment:
   DOW_GAME_DIR      Alternative to --game-dir (env var)
@@ -76,10 +89,17 @@ while [[ $# -gt 0 ]]; do
         --game-dir)  GAME_DIR="$2"; shift 2 ;;
         --dry-run)   DRY_RUN=true; shift ;;
         --no-backup) NO_BACKUP=true; shift ;;
+        --mode)      DEPLOY_MODE="$2"; shift 2 ;;
         --help|-h)   usage; exit 0 ;;
         *) die "Unknown option: $1 (use --help)" ;;
     esac
 done
+
+# Validate mode
+case "$DEPLOY_MODE" in
+    loose|sga) ;;
+    *) die "Invalid --mode '${DEPLOY_MODE}'. Valid values: loose, sga" ;;
+esac
 
 # Allow env-var override
 [[ -z "$GAME_DIR" && -n "${DOW_GAME_DIR:-}" ]] && GAME_DIR="$DOW_GAME_DIR"
@@ -171,6 +191,64 @@ find_game_dir() {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
+# WSL path helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Convert an absolute Linux path to a Windows UNC path (WSL2 only).
+# /home/user/foo → \\wsl.localhost\Ubuntu\home\user\foo
+_linux_to_win() {
+    local p="$1"
+    # Windows drive mounts (/mnt/d/...) → native Windows path (D:\...)
+    if [[ "$p" =~ ^/mnt/([a-zA-Z])/(.*)$ ]]; then
+        local drive="${BASH_REMATCH[1]^^}"   # uppercase drive letter
+        local rest="${BASH_REMATCH[2]}"
+        local winpath="${rest//\//\\}"
+        printf '%s:\\%s' "$drive" "$winpath"
+    else
+        # WSL filesystem path → UNC (\\wsl.localhost\Ubuntu\...)
+        local unc_root
+        if command -v wslpath &>/dev/null; then
+            unc_root="$(wslpath -w / 2>/dev/null)"
+            unc_root="${unc_root%\\}"   # strip trailing backslash
+        else
+            unc_root='\\wsl.localhost\Ubuntu'
+        fi
+        local rel="${p#/}"
+        local winrel="${rel//\//\\}"
+        # Use printf to avoid zsh echo interpreting \U, \t, etc.
+        printf '%s\\%s' "$unc_root" "$winrel"
+    fi
+}
+
+# Build EnginLocMod.sga from data/font/ and place it in the locale target.
+build_and_deploy_sga() {
+    local archive_exe="${GAME_DIR}/Archive.exe"
+    [[ -f "$archive_exe" ]] || die "Archive.exe not found: ${archive_exe}\nPlease pass --game-dir to point at the DoW DE installation."
+
+    local build_file="${REPO_ROOT}/.copilot_workspace/EnginLocMod.txt"
+    local sga_out="${LOCALE_TARGET}/EnginLocMod.sga"
+    local font_src="${REPO_ROOT}/data"
+
+    mkdir -p "$(dirname "$build_file")"
+
+    # Write build file with CRLF line endings (required by Archive.exe)
+    printf 'Archive\r\nTOCStart alias="data" relativeroot="."\r\nFileSettingsStart  defcompression="1"\r\n    Override wildcard=".*(fnt)$" minsize="-1" maxsize="-1" ct="2"\r\nFileSettingsEnd\r\nTOCEnd\r\n' > "$build_file"
+
+    local win_build win_src win_out
+    win_build="$(_linux_to_win "$build_file")"
+    win_src="$(_linux_to_win "$font_src")"
+    win_out="$(_linux_to_win "$sga_out")"
+
+    log "Building EnginLocMod.sga from data/font/ ..."
+    if ! $DRY_RUN; then
+        "$archive_exe" -c "$win_build" -r "$win_src" -a "$win_out" -v
+        ok "Built and deployed: ${sga_out}"
+    else
+        warn "[DRY RUN] Would build: ${font_src}/font/*.fnt → ${sga_out}"
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Backup helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -190,7 +268,8 @@ backup_item() {
 # ─────────────────────────────────────────────────────────────────────────────
 
 printf "\n${BOLD}WH40K DoW:DE — Traditional Chinese Locale Mod Deployer${RESET}\n"
-printf "Repo: %s\n\n" "$REPO_ROOT"
+printf "Repo: %s\n" "$REPO_ROOT"
+printf "Mode: %s\n\n" "$DEPLOY_MODE"
 
 # 1. Resolve game directory
 if [[ -z "$GAME_DIR" ]]; then
@@ -272,29 +351,58 @@ if ! $NO_BACKUP && ! $DRY_RUN; then
     ok "Backup written to ${BACKUP_DIR}/${STAMP}/"
 fi
 
-# 4. Copy mod directories
-for d in "${DEPLOY_DIRS[@]}"; do
-    local_src="${REPO_ROOT}/${d}"
-    [[ -d "$local_src" ]] || { warn "Source dir missing, skipping: $local_src"; continue; }
+# 4 / 5. Mode-dependent file deployment
+if [[ "$DEPLOY_MODE" == "loose" ]]; then
+    # 4. Copy mod directories (loose files)
+    for d in "${DEPLOY_DIRS[@]}"; do
+        local_src="${REPO_ROOT}/${d}"
+        [[ -d "$local_src" ]] || { warn "Source dir missing, skipping: $local_src"; continue; }
 
-    log "Deploying ${d}/ → ${LOCALE_TARGET}/${d}/"
-    if ! $DRY_RUN; then
-        rsync -a --exclude="*.bak" "${local_src}/" "${LOCALE_TARGET}/${d}/"
-    else
-        rsync -a --dry-run --exclude="*.bak" "${local_src}/" "${LOCALE_TARGET}/${d}/" | grep -v "^sending" || true
-    fi
-done
+        log "Deploying ${d}/ → ${LOCALE_TARGET}/${d}/"
+        if ! $DRY_RUN; then
+            rsync -a --exclude="*.bak" "${local_src}/" "${LOCALE_TARGET}/${d}/"
+        else
+            rsync -a --dry-run --exclude="*.bak" "${local_src}/" "${LOCALE_TARGET}/${d}/" | grep -v "^sending" || true
+        fi
+    done
 
-# 5. Copy mod files
-for f in "${DEPLOY_FILES[@]}"; do
-    local_src="${REPO_ROOT}/${f}"
-    [[ -f "$local_src" ]] || { warn "Source file missing, skipping: $local_src"; continue; }
+    # 5. Copy mod files
+    for f in "${DEPLOY_FILES[@]}"; do
+        local_src="${REPO_ROOT}/${f}"
+        [[ -f "$local_src" ]] || { warn "Source file missing, skipping: $local_src"; continue; }
 
-    log "Deploying ${f} → ${LOCALE_TARGET}/${f}"
-    if ! $DRY_RUN; then
-        cp -f "$local_src" "${LOCALE_TARGET}/${f}"
-    fi
-done
+        log "Deploying ${f} → ${LOCALE_TARGET}/${f}"
+        if ! $DRY_RUN; then
+            cp -f "$local_src" "${LOCALE_TARGET}/${f}"
+        fi
+    done
+elif [[ "$DEPLOY_MODE" == "sga" ]]; then
+    # 4. Build + deploy EnginLocMod.sga from data/font/ (fonts only in SGA)
+    build_and_deploy_sga
+
+    # Also deploy non-font data/ subdirs (art, sound) as loose files
+    for subdir in art sound; do
+        local_src="${REPO_ROOT}/data/${subdir}"
+        [[ -d "$local_src" ]] || continue
+        log "Deploying data/${subdir}/ → ${LOCALE_TARGET}/data/${subdir}/"
+        if ! $DRY_RUN; then
+            mkdir -p "${LOCALE_TARGET}/data/${subdir}"
+            rsync -a --exclude="*.bak" "${local_src}/" "${LOCALE_TARGET}/data/${subdir}/"
+        else
+            rsync -a --dry-run --exclude="*.bak" "${local_src}/" "${LOCALE_TARGET}/data/${subdir}/" | grep -v "^sending" || true
+        fi
+    done
+
+    # Deploy Engine.ucs (always needed, regardless of mode)
+    for f in "${DEPLOY_FILES[@]}"; do
+        local_src="${REPO_ROOT}/${f}"
+        [[ -f "$local_src" ]] || { warn "Source file missing, skipping: $local_src"; continue; }
+        log "Deploying ${f} → ${LOCALE_TARGET}/${f}"
+        if ! $DRY_RUN; then
+            cp -f "$local_src" "${LOCALE_TARGET}/${f}"
+        fi
+    done
+fi
 
 # 6. Migrate campaign states: copy SC save progress into TC state slots
 #    This preserves WXP (Winter Assault) campaign progress when switching
@@ -327,22 +435,40 @@ if ! _run_migration; then
     warn "Your save files are unchanged; deploy will continue."
 fi
 
-# 7. Disable original EnginLoc.sga so game loads data/ instead
+# 7. Manage EnginLoc.sga state based on deploy mode
 SGA_PATH="${LOCALE_TARGET}/EnginLoc.sga"
 SGA_DISABLED="${LOCALE_TARGET}/EnginLoc.sga.disabled"
 
-if [[ -f "$SGA_PATH" ]]; then
-    log "Disabling ${SGA_PATH} (renaming to .disabled)..."
-    if ! $DRY_RUN; then
-        mv "$SGA_PATH" "$SGA_DISABLED"
-        ok "Renamed EnginLoc.sga → EnginLoc.sga.disabled"
+if [[ "$DEPLOY_MODE" == "loose" ]]; then
+    # Disable original SGA so game loads loose data/ files instead
+    if [[ -f "$SGA_PATH" ]]; then
+        log "Disabling ${SGA_PATH} (renaming to .disabled)..."
+        if ! $DRY_RUN; then
+            mv "$SGA_PATH" "$SGA_DISABLED"
+            ok "Renamed EnginLoc.sga → EnginLoc.sga.disabled"
+        else
+            warn "[DRY RUN] Would rename: EnginLoc.sga → EnginLoc.sga.disabled"
+        fi
+    elif [[ -f "$SGA_DISABLED" ]]; then
+        ok "EnginLoc.sga already disabled (EnginLoc.sga.disabled exists)"
     else
-        warn "[DRY RUN] Would rename: EnginLoc.sga → EnginLoc.sga.disabled"
+        warn "EnginLoc.sga not found — game may still load stale packed locale"
     fi
-elif [[ -f "$SGA_DISABLED" ]]; then
-    ok "EnginLoc.sga already disabled (EnginLoc.sga.disabled exists)"
-else
-    warn "EnginLoc.sga not found — game may still load stale packed locale"
+elif [[ "$DEPLOY_MODE" == "sga" ]]; then
+    # Ensure EnginLoc.sga is active (our SGA runs alongside it)
+    if [[ -f "$SGA_DISABLED" ]]; then
+        log "Re-enabling EnginLoc.sga for sga mode..."
+        if ! $DRY_RUN; then
+            mv "$SGA_DISABLED" "$SGA_PATH"
+            ok "Renamed EnginLoc.sga.disabled → EnginLoc.sga"
+        else
+            warn "[DRY RUN] Would rename: EnginLoc.sga.disabled → EnginLoc.sga"
+        fi
+    elif [[ -f "$SGA_PATH" ]]; then
+        ok "EnginLoc.sga already active"
+    else
+        warn "EnginLoc.sga not found in either state"
+    fi
 fi
 
 # 8. Record deployment state for uninstall
@@ -350,10 +476,11 @@ if ! $DRY_RUN; then
     DEPLOY_STATE="${REPO_ROOT}/.copilot_workspace/last_deploy.env"
     mkdir -p "$(dirname "$DEPLOY_STATE")"
     cat > "$DEPLOY_STATE" <<ENVEOF
-GAME_DIR=${GAME_DIR}
-LOCALE_TARGET=${LOCALE_TARGET}
+GAME_DIR="${GAME_DIR}"
+LOCALE_TARGET="${LOCALE_TARGET}"
 BACKUP_STAMP=${STAMP}
-BACKUP_DIR=${BACKUP_DIR}/${STAMP}
+BACKUP_DIR="${BACKUP_DIR}/${STAMP}"
+DEPLOY_MODE=${DEPLOY_MODE}
 ENVEOF
     ok "Deploy state saved: ${DEPLOY_STATE}"
 fi

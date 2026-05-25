@@ -92,8 +92,20 @@ unpack-sga: ## Unpack EnginLoc.sga → data/ (requires setup-sga; Windows/Wine o
 # ─────────────────────────────────────────────────────────────────────────────
 
 .PHONY: deploy
-deploy: ## Deploy mod to the game installation (auto-detects path; 1-command action)
+deploy: ## Deploy mod (loose-file mode, default) — copies data/, disables EnginLoc.sga
 	@bash deploy.sh
+
+.PHONY: deploy-sga
+deploy-sga: ## Deploy mod (sga mode) — builds EnginLocMod.sga, keeps EnginLoc.sga active
+	@bash deploy.sh --mode sga
+
+.PHONY: deploy-dry
+deploy-dry: ## Dry-run the default (loose) deploy without writing anything
+	@bash deploy.sh --dry-run
+
+.PHONY: deploy-sga-dry
+deploy-sga-dry: ## Dry-run the sga deploy without writing anything
+	@bash deploy.sh --mode sga --dry-run
 
 .PHONY: uninstall
 uninstall: ## Revert deployment (restore backups, re-enable original SGA)
