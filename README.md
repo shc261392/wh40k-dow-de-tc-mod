@@ -12,6 +12,9 @@ Fixes font size/weight, subtitle artifacts, and applies text corrections to `Eng
 
 ## Installing the Mod
 
+> **Finding your game folder:** In Steam, right-click **Dawn of War Definitive Edition** → **Manage** → **Browse local files**.  
+> Common paths: `C:\Program Files (x86)\Steam\steamapps\common\Dawn of War Definitive Edition\` or `D:\SteamLibrary\steamapps\common\Dawn of War Definitive Edition\`
+
 ### Option A — Vortex Mod Manager (recommended)
 
 1. **Install the game extension** — drag `vortex-ext-game-warhammer40kdawnofwar-v*.zip` onto the Vortex **Extensions** tab and click *Enable*.  
@@ -30,20 +33,15 @@ To uninstall: click *Purge Mods* in Vortex. The original `EnginLoc.sga` is resto
 
 ### Option B — Manual install (Windows)
 
-1. Extract `wh40k-dow-de-tc-mod-v*.zip` into your game's locale directory:
-   ```
-   <Steam>\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\
-   ```
-   After extraction you should have `data\font\`, `data\art\`, `data\sound\`, and `Engine.ucs` there.
+1. Download `wh40k-dow-de-tc-mod-v*.zip` from [Releases](https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest).
+2. Find your game folder (see above), open the `Engine\Locale\Chinese\` subfolder, and extract the zip there.
+3. In that same folder, **rename** `EnginLoc.sga` to `EnginLoc.sga.disabled`.
+4. Launch the game. Done!
 
-2. Rename the original archive so the loose files take priority:
-   ```
-   EnginLoc.sga  →  EnginLoc.sga.disabled
-   ```
-
-3. Launch the game.
-
-To uninstall: delete the extracted `data\` folder and `Engine.ucs`, then rename `EnginLoc.sga.disabled` back to `EnginLoc.sga`.
+**To uninstall:**
+1. Go to your game's `Engine\Locale\Chinese\` folder.
+2. Delete the `data\` folder and `Engine.ucs` (the files from this mod).
+3. Rename `EnginLoc.sga.disabled` back to `EnginLoc.sga`.
 
 ---
 
@@ -73,6 +71,16 @@ bash uninstall.sh   # Linux / WSL2
 
 ## 繁體中文安裝說明
 
+### 如何找到遊戲資料夾
+
+在 Steam 的遊戲庫中，對《破曉之戰 決定版》**點右鍵 → 管理 → 瀏覽本機檔案**，即可開啟遊戲根目錄。
+
+常見安裝路徑：
+- `C:\Program Files (x86)\Steam\steamapps\common\Dawn of War Definitive Edition\`
+- `D:\SteamLibrary\steamapps\common\Dawn of War Definitive Edition\`
+
+---
+
 ### 方式 A — Vortex Mod Manager（建議）
 
 1. **安裝遊戲擴充套件** — 將 `vortex-ext-game-warhammer40kdawnofwar-v*.zip` 拖入 Vortex 的 **Extensions** 分頁，點選啟用。  
@@ -91,20 +99,15 @@ bash uninstall.sh   # Linux / WSL2
 
 ### 方式 B — 手動安裝（Windows）
 
-1. 將 `wh40k-dow-de-tc-mod-v*.zip` 解壓縮至遊戲的語言資料夾：
-   ```
-   <Steam>\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\
-   ```
-   解壓縮後應可看到 `data\font\`、`data\art\`、`data\sound\` 及 `Engine.ucs`。
+1. 從 [Releases](https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest) 下載 `wh40k-dow-de-tc-mod-v*.zip`。
+2. 使用上方說明找到遊戲根目錄，進入 `Engine\Locale\Chinese\` 子資料夾，將壓縮檔解壓縮至此處。
+3. 在同一個資料夾內，找到 `EnginLoc.sga`，將它**重新命名**為 `EnginLoc.sga.disabled`。
+4. 啟動遊戲，完成！
 
-2. 重新命名原始封存檔，讓散開的補丁檔案取得優先權：
-   ```
-   EnginLoc.sga  →  EnginLoc.sga.disabled
-   ```
-
-3. 啟動遊戲。
-
-解除安裝：刪除解壓縮的 `data\` 資料夾及 `Engine.ucs`，再將 `EnginLoc.sga.disabled` 重新命名為 `EnginLoc.sga`。
+**解除安裝：**
+1. 回到遊戲的 `Engine\Locale\Chinese\` 資料夾。
+2. 刪除 `data\` 資料夾以及 `Engine.ucs`（本模組的檔案）。
+3. 將 `EnginLoc.sga.disabled` 重新命名回 `EnginLoc.sga`。
 
 ---
 
@@ -122,7 +125,7 @@ bash deploy.sh
 .\deploy.ps1
 ```
 
-兩個腳本都會自動偵測 Steam 安裝路徑、建立備份、套用字型修正並部署。還原方式：
+腳本會自動偵測 Steam 安裝路徑、建立備份並部署。還原方式：
 
 ```bash
 bash uninstall.sh   # Linux / WSL2
