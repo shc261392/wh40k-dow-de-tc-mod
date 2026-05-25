@@ -111,6 +111,30 @@ deploy-sga-dry: ## Dry-run the sga deploy without writing anything
 uninstall: ## Revert deployment (restore backups, re-enable original SGA)
 	@bash uninstall.sh
 
+DIST_DIR := .copilot_workspace/dist
+VERSION  := $(shell python3 -c "import tomllib,pathlib; d=tomllib.loads(pathlib.Path('pyproject.toml').read_text()); print(d['project']['version'])" 2>/dev/null || echo "dev")
+PKG_NAME := wh40k-dow-de-tc-mod-v$(VERSION)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Packaging
+# ─────────────────────────────────────────────────────────────────────────────
+
+.PHONY: package
+package: apply ## Build distributable mod archive (.copilot_workspace/dist/PKG.zip)
+	@echo "▶ Packaging $(PKG_NAME).zip ..."
+	@rm -rf "$(DIST_DIR)/$(PKG_NAME)"
+	@mkdir -p "$(DIST_DIR)/$(PKG_NAME)/data/font" \
+	           "$(DIST_DIR)/$(PKG_NAME)/data/art" \
+	           "$(DIST_DIR)/$(PKG_NAME)/data/sound"
+	@rsync -a --exclude="*.bak" data/font/  "$(DIST_DIR)/$(PKG_NAME)/data/font/"
+	@rsync -a                   data/art/   "$(DIST_DIR)/$(PKG_NAME)/data/art/"
+	@rsync -a                   data/sound/ "$(DIST_DIR)/$(PKG_NAME)/data/sound/"
+	@cp Engine.ucs "$(DIST_DIR)/$(PKG_NAME)/"
+	@cd "$(DIST_DIR)" && zip -r "$(PKG_NAME).zip" "$(PKG_NAME)/" -x "*.DS_Store"
+	@echo "✓ $(DIST_DIR)/$(PKG_NAME).zip"
+	@echo "  Size: $$(du -sh "$(DIST_DIR)/$(PKG_NAME).zip" | cut -f1)"
+	@echo "  Files: $$(find "$(DIST_DIR)/$(PKG_NAME)" -type f | wc -l)"
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Maintenance
 # ─────────────────────────────────────────────────────────────────────────────
