@@ -78,31 +78,25 @@ Unofficial Traditional Chinese patch for DoW DE — fixes fonts, subtitle artifa
 
 [hr][/hr]
 
+[size=4][b]Compatibility[/b][/size]
+
+This mod only modifies files inside [font=Courier New]Engine\Locale\Chinese\[/font] — specifically font configs, UI art, sound, and [font=Courier New]Engine.ucs[/font]. It should be compatible with any other mod that does [b]not[/b] touch those same files. No formal compatibility testing has been conducted.
+
+If you discover a conflict with another mod, please let me know in the [b]comments or posts[/b] tab below.
+
+[hr][/hr]
+
 [size=4][b]Requirements[/b][/size]
 
 [list]
 [*]Warhammer 40,000: Dawn of War – Definitive Edition (Steam App 3556750)
-[*][url=https://www.nexusmods.com/about/vortex/]Vortex Mod Manager[/url] [i](recommended)[/i] — or follow the manual install below
 [/list]
 
 [hr][/hr]
 
-[size=4][b]Installation — Vortex (Recommended)[/b][/size]
+[size=4][b]Installation[/b][/size]
 
-[list=1]
-[*][b]Install the game extension[/b] — Download [b]vortex-ext-game-warhammer40kdawnofwar-v1.0.0.zip[/b] from the [url=https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest]GitHub Releases page[/url], then drag it onto the Vortex [b]Extensions[/b] tab and click Enable.
-[size=2][i](This only needs to be done once. It tells Vortex where DoW DE is installed.)[/i][/size]
-[*][b]Add the mod[/b] — Click [b]Download with Manager[/b] on this page, or drag [b]wh40k-dow-de-tc-mod-v1.0.0.zip[/b] onto Vortex.
-[*][b]Deploy[/b] — Click [b]Deploy Mods[/b] in Vortex.
-[size=2][i]Vortex automatically renames [font=Courier New]EnginLoc.sga[/font] → [font=Courier New]EnginLoc.sga.disabled[/font] so the patched files take priority over the original archive.[/i][/size]
-[*][b]Launch the game[/b] — Chinese text should now render correctly.
-[/list]
-
-[b]Uninstall:[/b] Click [b]Purge Mods[/b] in Vortex. The original [font=Courier New]EnginLoc.sga[/font] is restored automatically.
-
-[hr][/hr]
-
-[size=4][b]Installation — Manual (Windows)[/b][/size]
+[size=3][b]Manual install (Windows)[/b][/size]
 
 [list=1]
 [*]Extract the mod zip into your game's locale directory:[code]<Steam install>\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\[/code]After extraction you should see [font=Courier New]data\font\[/font], [font=Courier New]data\art\[/font], [font=Courier New]data\sound\[/font], and [font=Courier New]Engine.ucs[/font] inside that folder.
@@ -111,6 +105,12 @@ Unofficial Traditional Chinese patch for DoW DE — fixes fonts, subtitle artifa
 [/list]
 
 [b]Uninstall:[/b] Delete the extracted [font=Courier New]data\[/font] folder and [font=Courier New]Engine.ucs[/font], then rename [font=Courier New]EnginLoc.sga.disabled[/font] back to [font=Courier New]EnginLoc.sga[/font].
+
+[size=3][b]Vortex Mod Manager[/b][/size]
+
+Vortex support requires a game extension that currently needs to be installed manually. This will be simplified once the extension is officially listed in Vortex — this section will be updated then.
+
+For now, use the manual install above.
 
 [hr][/hr]
 
@@ -125,11 +125,11 @@ This mod does [b]not[/b] modify any save files or campaign progress. Deployment 
 
 [hr][/hr]
 
-[size=4][b]Source Code[/b][/size]
+[size=4][b]Questions & Support[/b][/size]
 
-[url=https://github.com/shc261392/wh40k-dow-de-tc-mod]github.com/shc261392/wh40k-dow-de-tc-mod[/url]
+Have a question, found a bug, or want to contribute a text correction? Post in the [b]comments[/b] or [b]posts[/b] tab on this page — that's the best way to reach me.
 
-Bug reports and text correction contributions welcome via GitHub Issues.
+[size=2][i](Source code also available at [url=https://github.com/shc261392/wh40k-dow-de-tc-mod]github.com/shc261392/wh40k-dow-de-tc-mod[/url] for reference.)[/i][/size]
 
 [hr][/hr]
 [hr][/hr]
@@ -149,31 +149,25 @@ Bug reports and text correction contributions welcome via GitHub Issues.
 
 [hr][/hr]
 
+[size=4][b]相容性[/b][/size]
+
+本模組只修改 [font=Courier New]Engine\Locale\Chinese\[/font] 資料夾內的檔案（字型設定、介面圖片、音效及 [font=Courier New]Engine.ucs[/font]）。凡是不修改上述同一路徑的模組，理論上皆可與本模組相容。目前尚未進行正式的相容性測試。
+
+若您發現與其他模組的衝突，歡迎在下方的[b]留言區或討論區[/b]告知。
+
+[hr][/hr]
+
 [size=4][b]需求[/b][/size]
 
 [list]
 [*]《戰鎚40,000：戰爭黎明 決定版》Steam 版（App ID：3556750）
-[*][url=https://www.nexusmods.com/about/vortex/]Vortex Mod Manager[/url] [i]（建議使用）[/i] — 或依照以下手動安裝步驟操作
 [/list]
 
 [hr][/hr]
 
-[size=4][b]安裝方式 — Vortex（建議）[/b][/size]
+[size=4][b]安裝方式[/b][/size]
 
-[list=1]
-[*][b]安裝遊戲擴充套件[/b] — 從 [url=https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest]GitHub Releases 頁面[/url]下載 [b]vortex-ext-game-warhammer40kdawnofwar-v1.0.0.zip[/b]，拖入 Vortex 的 [b]Extensions[/b] 分頁並點選啟用。
-[size=2][i]（只需執行一次，讓 Vortex 知道 DoW DE 的安裝位置。）[/i][/size]
-[*][b]新增模組[/b] — 在本頁面點選 [b]Download with Manager[/b]，或將 [b]wh40k-dow-de-tc-mod-v1.0.0.zip[/b] 拖入 Vortex。
-[*][b]部署[/b] — 在 Vortex 中點選 [b]Deploy Mods[/b]。
-[size=2][i]Vortex 會自動將 [font=Courier New]EnginLoc.sga[/font] 重新命名為 [font=Courier New]EnginLoc.sga.disabled[/font]，讓補丁檔案取得優先權。[/i][/size]
-[*][b]啟動遊戲[/b] — 繁體中文文字應已正常顯示。
-[/list]
-
-[b]解除安裝：[/b]在 Vortex 中點選 [b]Purge Mods[/b]，原始 [font=Courier New]EnginLoc.sga[/font] 將自動還原。
-
-[hr][/hr]
-
-[size=4][b]安裝方式 — 手動（Windows）[/b][/size]
+[size=3][b]手動安裝（Windows）[/b][/size]
 
 [list=1]
 [*]將模組 zip 解壓縮至遊戲的語言資料夾：[code]<Steam 安裝路徑>\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\[/code]解壓縮後應可看到 [font=Courier New]data\font\[/font]、[font=Courier New]data\art\[/font]、[font=Courier New]data\sound\[/font] 及 [font=Courier New]Engine.ucs[/font]。
@@ -182,6 +176,12 @@ Bug reports and text correction contributions welcome via GitHub Issues.
 [/list]
 
 [b]解除安裝：[/b]刪除解壓縮的 [font=Courier New]data\[/font] 資料夾及 [font=Courier New]Engine.ucs[/font]，再將 [font=Courier New]EnginLoc.sga.disabled[/font] 重新命名為 [font=Courier New]EnginLoc.sga[/font]。
+
+[size=3][b]Vortex Mod Manager[/b][/size]
+
+Vortex 支援需要手動安裝遊戲擴充套件，步驟說明將在擴充套件正式列入 Vortex 支援名單後更新。
+
+目前請使用上方的手動安裝方式。
 
 [hr][/hr]
 
@@ -195,11 +195,11 @@ Bug reports and text correction contributions welcome via GitHub Issues.
 
 [hr][/hr]
 
-[size=4][b]原始碼[/b][/size]
+[size=4][b]問題與回饋[/b][/size]
 
-[url=https://github.com/shc261392/wh40k-dow-de-tc-mod]github.com/shc261392/wh40k-dow-de-tc-mod[/url]
+有任何問題、發現錯誤，或想貢獻文字校正？請在本頁面的[b]留言區或討論區[/b]發文，這是聯繫我最好的方式。
 
-歡迎透過 GitHub Issues 回報問題或貢獻文字校正。
+[size=2][i]（原始碼亦可在 [url=https://github.com/shc261392/wh40k-dow-de-tc-mod]github.com/shc261392/wh40k-dow-de-tc-mod[/url] 取得，供參考。）[/i][/size]
 ```
 
 ---
