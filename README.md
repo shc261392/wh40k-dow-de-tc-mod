@@ -4,13 +4,52 @@ A comprehensive font-size, rendering, and text correction mod for the Traditiona
 Chinese locale in **Warhammer 40,000: Dawn of War – Definitive Edition**.  
 Resolves text clipping and scaling issues on high-resolution displays.
 
+> **Download:** [Releases](https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest) — grab `wh40k-dow-de-tc-mod-v*.zip` (mod) and `vortex-ext-*.zip` (Vortex extension).
+
 ---
 
-## Quick Start
+## Installing the Mod
 
-### For End Users (1 command)
+### Option A — Vortex Mod Manager (recommended)
 
-**Linux (Steam / Proton) or WSL2:**
+1. **Install the game extension** — drag `vortex-ext-game-warhammer40kdawnofwar-v*.zip` onto the Vortex **Extensions** tab and click *Enable*.  
+   *(Only needed once. This lets Vortex recognise DoW DE as a managed game.)*
+
+2. **Add the mod** — drag `wh40k-dow-de-tc-mod-v*.zip` onto Vortex.
+
+3. **Deploy** — click *Deploy Mods* in Vortex.  
+   Vortex automatically renames `EnginLoc.sga` → `EnginLoc.sga.disabled` so the patched files take priority.
+
+4. **Launch the game.** Chinese text should now render correctly.
+
+To uninstall: click *Purge Mods* in Vortex. The original `EnginLoc.sga` is restored automatically.
+
+---
+
+### Option B — Manual install (Windows)
+
+1. Extract `wh40k-dow-de-tc-mod-v*.zip` into your game's locale directory:
+   ```
+   <Steam>\steamapps\common\Dawn of War Definitive Edition\Engine\Locale\Chinese\
+   ```
+   After extraction you should have `data\font\`, `data\art\`, `data\sound\`, and `Engine.ucs` there.
+
+2. Rename the original archive so the loose files take priority:
+   ```
+   EnginLoc.sga  →  EnginLoc.sga.disabled
+   ```
+
+3. Launch the game.
+
+To uninstall: delete the extracted `data\` folder and `Engine.ucs`, then rename `EnginLoc.sga.disabled` back to `EnginLoc.sga`.
+
+---
+
+### Option C — Script install (Linux / WSL2 / Windows native)
+
+Clone or download the repo, then run one command from the repo root:
+
+**Linux / WSL2:**
 ```bash
 bash deploy.sh
 ```
@@ -134,13 +173,12 @@ so the patched `data/` folder takes precedence. Uninstall renames it back.
 
 ## Vortex Mod Manager
 
-The repo is Vortex-compatible. Install target path: `Engine/Locale/Chinese`.
+See **[Option A — Vortex install](#option-a--vortex-mod-manager-recommended)** above for the full walkthrough.
 
-After Vortex deploys, manually run `deploy.sh` or `deploy.ps1` once to:
-1. Patch the `.fnt` files in place
-2. Disable the original `EnginLoc.sga`
-
-(Vortex handles file copying; the scripts handle the `.sga` disable step.)
+The repo ships a Vortex game extension (`vortex-ext/game-warhammer40kdawnofwar/`) that:
+- Registers DoW DE (Steam App 3556750) as a Vortex-managed game
+- Sets the correct install path (`Engine/Locale/Chinese/`)
+- Automatically disables `EnginLoc.sga` on deploy and re-enables it on purge
 
 ---
 
