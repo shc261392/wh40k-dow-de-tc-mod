@@ -6,7 +6,7 @@ Fixes font size/weight, subtitle artifacts, and applies text corrections to `Eng
 > 本模組為《戰鎚40,000：破曉之戰 決定版》的非官方繁體中文補丁，修正字型大小、字重、字幕殘字問題，並校正 `Engine.ucs` 的文字內容。  
 > **中文安裝說明請見下方 [繁體中文安裝說明](#繁體中文安裝說明)。**
 
-> **Download:** [Releases](https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest) — grab `wh40k-dow-de-tc-mod-v*.zip` (mod) and `vortex-ext-*.zip` (Vortex extension).
+> **Download:** [GitHub Releases](https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest) · [Nexus Mods](https://www.nexusmods.com/warhammerdawnofwardefinitiveedition/mods/41) — grab `wh40k-dow-de-tc-mod-v*.zip` (mod) and `vortex-ext-*.zip` (Vortex extension).
 
 ---
 
@@ -70,6 +70,8 @@ bash uninstall.sh   # Linux / WSL2
 ---
 
 ## 繁體中文安裝說明
+
+> **下載：** [GitHub Releases](https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest) · [Nexus Mods](https://www.nexusmods.com/warhammerdawnofwardefinitiveedition/mods/41)
 
 ### 如何找到遊戲資料夾
 

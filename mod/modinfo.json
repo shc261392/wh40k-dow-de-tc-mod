@@ -4,13 +4,13 @@
   "author": "Community Contributor",
   "version": "1.0.0",
   "description": "Fixes text clipping and scaling issues in the Traditional Chinese locale for Warhammer 40,000: Dawn of War - Definitive Edition. Includes anti-clipping fallback profile and optional Microsoft YaHei font replacement.",
-  "homepage": "https://github.com/[USER]/wh40k-dow-de-tc-mod",
+  "homepage": "https://github.com/shc261392/wh40k-dow-de-tc-mod",
   "repository": {
     "type": "git",
-    "url": "https://github.com/[USER]/wh40k-dow-de-tc-mod.git"
+    "url": "https://github.com/shc261392/wh40k-dow-de-tc-mod.git"
   },
   "bugs": {
-    "url": "https://github.com/[USER]/wh40k-dow-de-tc-mod/issues"
+    "url": "https://github.com/shc261392/wh40k-dow-de-tc-mod/issues"
   },
   "category": "Utility",
   "game": "warhammer40kdawnofwar",
