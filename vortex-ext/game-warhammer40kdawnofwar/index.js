@@ -17,12 +17,11 @@
  *     A single top-level wrapper folder is auto-stripped when the content
  *     does not already begin with a recognised game subfolder.
  *
- * ⚠️  SGA note
- * -----------
+ * SGA note
+ * --------
  * Locale mods require Engine/Locale/<Locale>/EnginLoc.sga to be renamed to
  * EnginLoc.sga.disabled so the engine loads loose files instead of the pack.
- * Run deploy.sh / deploy.ps1 from the repo after installing a locale mod via
- * Vortex — the deploy script handles that rename step automatically.
+ * The did-deploy / did-purge hooks in this extension handle that automatically.
  */
 
 'use strict';
@@ -239,6 +238,75 @@ function installRootContent(files) {
 }
 
 // ---------------------------------------------------------------------------
+// SGA state management helpers
+// ---------------------------------------------------------------------------
+
+const LOCALE_SGA_DIR    = path.join('Engine', 'Locale', 'Chinese');
+const ENGINLOC_ACTIVE   = 'EnginLoc.sga';
+const ENGINLOC_DISABLED = 'EnginLoc.sga.disabled';
+
+/**
+ * Returns true when loose locale mod files are present in the game dir.
+ * Checks for Engine/Locale/Chinese/data/ which deploy.sh / Vortex creates.
+ *
+ * @param {string} gamePath  Absolute path to the game installation.
+ * @returns {Promise<boolean>}
+ */
+function localeModIsDeployed(gamePath) {
+  return fs.statAsync(path.join(gamePath, LOCALE_SGA_DIR, 'data'))
+    .then(stat => stat.isDirectory())
+    .catch(() => false);
+}
+
+/**
+ * Renames EnginLoc.sga ↔ EnginLoc.sga.disabled to match the deployed state.
+ *
+ * When locale mod files are present, the SGA must be disabled so the engine
+ * picks up the loose files instead of the packed archive.
+ *
+ * @param {object}  api       Vortex API handle.
+ * @param {string}  gamePath  Absolute path to the game installation.
+ * @param {boolean} deployed  true → disable SGA;  false → enable SGA.
+ * @returns {Promise<void>}
+ */
+function syncSgaState(api, gamePath, deployed) {
+  const sgaActive   = path.join(gamePath, LOCALE_SGA_DIR, ENGINLOC_ACTIVE);
+  const sgaDisabled = path.join(gamePath, LOCALE_SGA_DIR, ENGINLOC_DISABLED);
+
+  if (deployed) {
+    return fs.statAsync(sgaActive)
+      .then(() => fs.renameAsync(sgaActive, sgaDisabled))
+      .then(() => api.sendNotification({
+        id:        'enginloc-sga-disabled',
+        type:      'info',
+        title:     'DoW:DE Locale Mod',
+        message:   'EnginLoc.sga disabled — loose font files now active.',
+        displayMS: 4000,
+      }))
+      .catch(err => {
+        if (err.code !== 'ENOENT') {
+          api.showErrorNotification('DoW:DE — failed to disable EnginLoc.sga', err);
+        }
+      });
+  } else {
+    return fs.statAsync(sgaDisabled)
+      .then(() => fs.renameAsync(sgaDisabled, sgaActive))
+      .then(() => api.sendNotification({
+        id:        'enginloc-sga-enabled',
+        type:      'info',
+        title:     'DoW:DE Locale Mod',
+        message:   'EnginLoc.sga restored to active.',
+        displayMS: 4000,
+      }))
+      .catch(err => {
+        if (err.code !== 'ENOENT') {
+          api.showErrorNotification('DoW:DE — failed to restore EnginLoc.sga', err);
+        }
+      });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Main entry point
 // ---------------------------------------------------------------------------
 
@@ -278,6 +346,39 @@ function main(context) {
     testRootContent,
     installRootContent,
   );
+
+  // ── Post-deploy hook: disable EnginLoc.sga when locale mod files are present
+  //
+  // After Vortex deploys a locale mod (loose font/art/sound files), the engine
+  // must NOT load the packed EnginLoc.sga or the loose files will be ignored.
+  // We check whether the data/ directory was created and rename accordingly.
+  context.api.events.on('did-deploy', (profileId, deployment, setTitle, cb) => {
+    const state     = context.api.store.getState();
+    const profile   = util.getSafe(state, ['persistent', 'profiles', profileId], undefined);
+    if (!profile || profile.gameId !== GAME_ID) return cb();
+
+    const discovery = util.getSafe(state, ['settings', 'gameMode', 'discovered', GAME_ID], undefined);
+    if (!discovery || !discovery.path) return cb();
+
+    localeModIsDeployed(discovery.path)
+      .then(deployed => syncSgaState(context.api, discovery.path, deployed))
+      .then(() => cb())
+      .catch(() => cb());
+  });
+
+  // ── Post-purge hook: re-enable EnginLoc.sga when locale mod is removed
+  context.api.events.on('did-purge', (profileId, cb) => {
+    const state     = context.api.store.getState();
+    const profile   = util.getSafe(state, ['persistent', 'profiles', profileId], undefined);
+    if (!profile || profile.gameId !== GAME_ID) return cb();
+
+    const discovery = util.getSafe(state, ['settings', 'gameMode', 'discovered', GAME_ID], undefined);
+    if (!discovery || !discovery.path) return cb();
+
+    syncSgaState(context.api, discovery.path, false)
+      .then(() => cb())
+      .catch(() => cb());
+  });
 
   return true;
 }
