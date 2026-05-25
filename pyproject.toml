@@ -1,7 +1,7 @@
 [project]
 name = "wh40k-dow-de-tc-mod"
 version = "1.0.0"
-description = "Traditional Chinese locale font & text fix for WH40K: Dawn of War – Definitive Edition"
+description = "Unofficial Traditional Chinese patch for WH40K: Dawn of War – Definitive Edition"
 requires-python = ">=3.9"
 dependencies = []
 

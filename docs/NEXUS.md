@@ -23,7 +23,7 @@ Copy each section into the corresponding Nexus Mods field.
 4. Under **Files**, click **Add file** → upload `wh40k-dow-de-tc-mod-v1.0.0.zip`
    - File name: `wh40k-dow-de-tc-mod-v1.0.0`
    - Version: `1.0.0`
-   - Description: `Main mod archive — font fix, art, sound, Engine.ucs`
+   - Description: `Main mod archive — unofficial TC patch (fonts, art, sound, Engine.ucs)`
 5. Publish the mod
 6. Note the mod ID from the URL (e.g. `.../mods/42` → ID is `42`)
 7. Update `mod/info.json` with the real mod ID
@@ -50,20 +50,20 @@ To rebuild the extension zip: `make package-ext`
 ### Title
 
 ```
-WH40K Dawn of War DE — Traditional Chinese Locale Fix
+Unofficial Traditional Chinese Patch
 ```
 
 ### Summary (one-liner shown on mod card)
 
 ```
-Traditional Chinese font size fix, font weight correction, subtitle artifact fix, and text corrections for DoW DE.
+Unofficial Traditional Chinese patch for DoW DE — fixes fonts, subtitle artifact, and text corrections in Engine.ucs.
 ```
 
 ### Description (BBCode — paste into the Nexus description editor)
 
 ```bbcode
-[center][size=5][b]Traditional Chinese Locale Fix[/b][/size]
-[size=3]Font + Text Corrections for Dawn of War – Definitive Edition[/size][/center]
+[center][size=5][b]Unofficial Traditional Chinese Patch[/b][/size]
+[size=3]Font Fixes + Text Corrections for Dawn of War – Definitive Edition[/size][/center]
 
 [hr][/hr]
 

@@ -1,8 +1,7 @@
-# WH40K: Dawn of War DE — Traditional Chinese Locale Fix
+# WH40K: Dawn of War DE — Unofficial Traditional Chinese Patch
 
-A comprehensive font-size, rendering, and text correction mod for the Traditional
-Chinese locale in **Warhammer 40,000: Dawn of War – Definitive Edition**.  
-Resolves text clipping and scaling issues on high-resolution displays.
+Unofficial Traditional Chinese patch for **Warhammer 40,000: Dawn of War – Definitive Edition**.  
+Fixes font size/weight, subtitle artifacts, and applies text corrections to `Engine.ucs`.
 
 > **Download:** [Releases](https://github.com/shc261392/wh40k-dow-de-tc-mod/releases/latest) — grab `wh40k-dow-de-tc-mod-v*.zip` (mod) and `vortex-ext-*.zip` (Vortex extension).
 

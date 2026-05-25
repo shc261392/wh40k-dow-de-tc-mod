@@ -1,7 +1,7 @@
 {
-  "name": "WH40K DOW DE - Traditional Chinese Locale Font Fix",
+  "name": "Unofficial Traditional Chinese Patch",
   "author": "Community",
-  "description": "Comprehensive font-size and rendering fix for Traditional Chinese locale in Warhammer 40,000: Dawn of War - Definitive Edition. Resolves UI text clipping and scaling on high-resolution displays.",
+  "description": "Unofficial Traditional Chinese patch for Warhammer 40,000: Dawn of War - Definitive Edition. Fixes font size/weight, subtitle artifacts, and applies text corrections to Engine.ucs.",
   "version": "1.0.0",
   "nexusMods": {
     "modId": null,
