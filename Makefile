@@ -111,9 +111,13 @@ deploy-sga-dry: ## Dry-run the sga deploy without writing anything
 uninstall: ## Revert deployment (restore backups, re-enable original SGA)
 	@bash uninstall.sh
 
-DIST_DIR := .copilot_workspace/dist
-VERSION  := $(shell python3 -c "import tomllib,pathlib; d=tomllib.loads(pathlib.Path('pyproject.toml').read_text()); print(d['project']['version'])" 2>/dev/null || echo "dev")
-PKG_NAME := wh40k-dow-de-tc-mod-v$(VERSION)
+DIST_DIR  := .copilot_workspace/dist
+VERSION   := $(shell python3 -c "import tomllib,pathlib; d=tomllib.loads(pathlib.Path('pyproject.toml').read_text()); print(d['project']['version'])" 2>/dev/null || echo "dev")
+PKG_NAME  := wh40k-dow-de-tc-mod-v$(VERSION)
+EXT_DIR   := vortex-ext/game-warhammer40kdawnofwar
+EXT_ID    := game-warhammer40kdawnofwar
+EXT_VER   := $(shell python3 -c "import json,pathlib; print(json.loads(pathlib.Path('$(EXT_DIR)/info.json').read_text())['version'])" 2>/dev/null || echo "dev")
+EXT_NAME  := vortex-ext-$(EXT_ID)-v$(EXT_VER)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Packaging
@@ -134,6 +138,23 @@ package: apply ## Build distributable mod archive (.copilot_workspace/dist/PKG.z
 	@echo "✓ $(DIST_DIR)/$(PKG_NAME).zip"
 	@echo "  Size: $$(du -sh "$(DIST_DIR)/$(PKG_NAME).zip" | cut -f1)"
 	@echo "  Files: $$(find "$(DIST_DIR)/$(PKG_NAME)" -type f | wc -l)"
+
+.PHONY: package-ext
+package-ext: ## Build Vortex extension zip (.copilot_workspace/dist/vortex-ext-*.zip)
+	@echo "▶ Packaging Vortex extension $(EXT_NAME).zip ..."
+	@rm -rf "$(DIST_DIR)/$(EXT_NAME)"
+	@mkdir -p "$(DIST_DIR)/$(EXT_NAME)/$(EXT_ID)"
+	@cp "$(EXT_DIR)/index.js"  "$(DIST_DIR)/$(EXT_NAME)/$(EXT_ID)/"
+	@cp "$(EXT_DIR)/info.json" "$(DIST_DIR)/$(EXT_NAME)/$(EXT_ID)/"
+	@[ -f "$(EXT_DIR)/gameart.jpg" ] && cp "$(EXT_DIR)/gameart.jpg" "$(DIST_DIR)/$(EXT_NAME)/$(EXT_ID)/" || true
+	@cd "$(DIST_DIR)/$(EXT_NAME)" && zip -r "../$(EXT_NAME).zip" "$(EXT_ID)/" -x "*.DS_Store"
+	@rm -rf "$(DIST_DIR)/$(EXT_NAME)"
+	@echo "✓ $(DIST_DIR)/$(EXT_NAME).zip"
+	@echo "  Size: $$(du -sh "$(DIST_DIR)/$(EXT_NAME).zip" | cut -f1)"
+	@echo "  Files: $$(unzip -l "$(DIST_DIR)/$(EXT_NAME).zip" | tail -1)"
+
+.PHONY: package-all
+package-all: package package-ext ## Build both the mod archive and Vortex extension zip
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Maintenance
