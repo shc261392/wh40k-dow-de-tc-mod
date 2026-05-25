@@ -111,7 +111,7 @@ deploy-sga-dry: ## Dry-run the sga deploy without writing anything
 uninstall: ## Revert deployment (restore backups, re-enable original SGA)
 	@bash uninstall.sh
 
-DIST_DIR  := .copilot_workspace/dist
+DIST_DIR  := dist
 VERSION   := $(shell python3 -c "import tomllib,pathlib; d=tomllib.loads(pathlib.Path('pyproject.toml').read_text()); print(d['project']['version'])" 2>/dev/null || echo "dev")
 PKG_NAME  := wh40k-dow-de-tc-mod-v$(VERSION)
 EXT_DIR   := vortex-ext/game-warhammer40kdawnofwar
