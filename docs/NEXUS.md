@@ -17,7 +17,7 @@ Copy each section into the corresponding Nexus Mods field.
 
 ### Steps
 
-1. Go to <https://www.nexusmods.com/warhammer40kdawnofwar>
+1. Go to <https://www.nexusmods.com/warhammerdawnofwardefinitiveedition>
 2. Log in → click **Upload a mod**
 3. Fill in the fields using the content below
 4. Under **Files**, click **Add file** → upload `wh40k-dow-de-tc-mod-v1.0.0.zip`
@@ -139,7 +139,7 @@ Bug reports and text correction contributions welcome via GitHub Issues.
 Once the mod is live, update `mod/info.json` with the real mod ID:
 
 1. Find the mod ID in the Nexus URL, e.g.:  
-   `https://www.nexusmods.com/warhammer40kdawnofwar/mods/42` → ID is `42`
+   `https://www.nexusmods.com/warhammerdawnofwardefinitiveedition/mods/42` → ID is `42`
 
 2. Edit `mod/info.json`:
    ```json
@@ -149,7 +149,7 @@ Once the mod is live, update `mod/info.json` with the real mod ID:
    },
    "source": {
      ...
-     "nexusMods": "https://www.nexusmods.com/warhammer40kdawnofwar/mods/42"
+     "nexusMods": "https://www.nexusmods.com/warhammerdawnofwardefinitiveedition/mods/42"
    }
    ```
 

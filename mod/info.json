@@ -10,7 +10,7 @@
   },
   "source": {
     "github": "https://github.com/shc261392/wh40k-dow-de-tc-mod",
-    "nexusMods": "https://www.nexusmods.com/warhammer40kdawnofwar/mods/[MOD_ID]"
+    "nexusMods": "https://www.nexusmods.com/warhammerdawnofwardefinitiveedition/mods/[MOD_ID]"
   },
   "compatibility": {
     "gameVersions": ["2.02.0"],
